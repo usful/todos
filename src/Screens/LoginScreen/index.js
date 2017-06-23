@@ -13,7 +13,9 @@ import {
 } from "native-base";
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
+import PropTypes from 'prop-types';
 import styles from "./styles";
+import connect from '../../connect';
 
 const background = require("../../../assets/shadow.png");
 
@@ -28,8 +30,8 @@ class Login extends Component {
   }
 
   handleLoginPress() {
-    console.log(this.props);
-    this.props.createUser({
+    console.log('loginUser');
+    this.props.loginUser({
       variables: {
         user: {
           username: this.state.username,
@@ -39,13 +41,14 @@ class Login extends Component {
     })
       .then(({ data }) => {
         console.log('got data', data);
+        this.props.updateStore({ response: data });
       }).catch((error) => {
         console.log('there was an error sending the query', error);
       });
   }
 
   render() {
-    console.log('this is the state', this.state);
+    console.log('props', this.props);
     return (
       <Container>
         <Content>
@@ -66,16 +69,19 @@ class Login extends Component {
   }
 }
 
-const createUserQuery = gql`
-mutation CreateUser($user: CreateUserInput!) {
-  createUser(input: $user) {
-    changedUser {
-      id
-      username
+const loginUserQuery = gql`
+  mutation LoginUser($user: LoginUserInput!) {
+    loginUser(input: $user) {
+      user {
+        id
+        username
+      }
+      token
     }
-    token
   }
-}
 `
 
-export default graphql(createUserQuery, {name: 'createUser'})(Login)
+const connectedComponent = connect(Login);
+console.log('connected coponent', connectedComponent);
+
+export default graphql(loginUserQuery, {name: 'loginUser'})(connectedComponent);
