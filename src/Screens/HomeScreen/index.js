@@ -15,47 +15,25 @@ import {
 } from "native-base";
 import styles from './styles';
 
+import { TodoListCard } from '../../Components';
 import connect from '../../connect';
 
 class Home extends Component {
 
   renderItem(edge){
-    const data = edge.node;
-    const isOwner = edge.owner;
 
-    const handlePress = () => {
-      const handler = isOwner ? this.props.deleteList : this.props.leaveList;
-      const vars = isOwner ? {id:edge.node.id} :
-        {
-          userId:this.props.store.userId,
-          todoListId:edge.node.id
-        };
-      handler({
-        variables: {
-          input: vars
-        },
-      }).then(({data}) => {
-        console.log('success');
-        const query = this.props.getLists;
-        query.refetch(query.variables);
-      }).catch((error) => {
-        console.log('error', error);
-      });
-    }
+    const done = () => {
+      const query = this.props.getLists;
+      query.refetch(query.variables);
+    };
 
     return (
-      <ListItem key={`list-${data.id}`} onPress={()=>console.log('pressed item')} button>
-        <Card>
-          <CardItem style={styles.cardContent}>
-            <Text>{data.title}</Text>
-            <Button
-              transparent
-              onPress={handlePress}
-            >
-              <Icon name={isOwner ? "trash" : "md-close"} active/>
-            </Button>
-          </CardItem>
-        </Card>
+      <ListItem key={`list-${edge.node.id}`} onPress={()=>console.log('pressed item')} button>
+        <TodoListCard
+          done={done}
+          data={edge.node}
+          owner={edge.owner}
+        />
       </ListItem>
     );
   };
@@ -105,39 +83,7 @@ query getUserTodoLists($id: ID!) {
   }
 }`;
 
-const leaveList = gql`
-mutation removeMembership($input:RemoveFromMembershipConnectionInput!) {
-	removeFromMembershipConnection(input:$input){
-	  changedMembership {
-      user {
-        todoLists{
-          edges {
-            node {
-              id
-              title
-            }
-            owner
-          }
-        }
-      }
-    }
-	}
-}`;
-
-const deleteTodoList = gql`
-mutation deleteTodoList($input: DeleteTodoListInput!) {
-  deleteTodoList(input:$input){
-    clientMutationId
-  }
-}`;
-
-
-/** Todo think maybe about a schema like this. Users have a one to many connection for subscriptions, and
- * lists have a one to many connection with Users. Problem, you have to update both connections for a user to be
- * added or remove
- **/
-// Todo need to run this query every time page is loaded
-export default connect(compose(
+export default connect(
   graphql(getTodoListsQuery,
     {
       name: 'getLists',
@@ -147,7 +93,5 @@ export default connect(compose(
         }
       })
     }
-  ),
-  graphql(leaveList,{name: 'leaveList'}),
-  graphql(deleteTodoList,{name: 'deleteList'})
-)(Home));
+  )(Home)
+);
