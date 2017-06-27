@@ -8,6 +8,7 @@ import {
   Icon,
   Button,
   Container,
+  H3
 } from "native-base";
 import Spinner from 'react-native-spinkit';
 import Moment from 'moment';
@@ -60,7 +61,7 @@ class TodoListCard extends Component {
     return (
       <Card>
         <CardItem style={styles.cardContent}>
-          <Text>{data.title}</Text>
+          <H3>{data.title}</H3>
           <Button
             transparent
             onPress={this.state.mutating ? null : handleDelete}
