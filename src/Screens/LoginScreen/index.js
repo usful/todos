@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Image } from "react-native";
 import {
   Container,
   Content,
@@ -23,6 +22,7 @@ class Login extends Component {
 
   constructor(props) {
     super(props);
+    console.log('This component ', this);
     this.state = {
       username: "",
       password: ""
@@ -40,8 +40,14 @@ class Login extends Component {
       }
     })
       .then(({ data }) => {
+        // Set apollo middleware
+
         console.log('got data', data);
-        this.props.updateStore({ response: data });
+        this.props.updateStore({
+          response: data,
+          token: data.loginUser.token,
+          userId: data.loginUser.user.id,
+        });
       }).catch((error) => {
         console.log('there was an error sending the query', error);
       });
@@ -63,6 +69,15 @@ class Login extends Component {
               <Text>Click Me! </Text>
             </Button>
           </Form>
+          <Button onPress={() => {
+            this.props.updateStore({
+              token:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJraW5kIjoic2NhcGhvbGQuc3VwZXJ1c2VyIiwiZXhwIjo4NjQwMDAwMDAwMDAwMDAwLCJpYXQiOjE0OTgyNDk4MDMsImF1ZCI6Ikp0Z2Z5WklRMnBKajlySThFOWU2MTdoUWNrMFJueEFuIiwiaXNzIjoiaHR0cHM6Ly9zY2FwaG9sZC5hdXRoMC5jb20vIiwic3ViIjoiYTQxNjkyMWQtNzM3MC00ZTA4LWFiODktMTA4ZWYxNmIwMmZjIn0.hPHB7MT-5nI9ezdA380LZAkPAgK0NpksFlA8T8Eq3wo',
+              userId: 'VXNlcjo2'
+            });
+            this.props.navigation.navigate('Home')
+          }}>
+            <Text>Dev button</Text>
+          </Button>
         </Content>
       </Container>
     );
@@ -82,6 +97,5 @@ const loginUserQuery = gql`
 `
 
 const connectedComponent = connect(Login);
-console.log('connected coponent', connectedComponent);
 
 export default graphql(loginUserQuery, {name: 'loginUser'})(connectedComponent);

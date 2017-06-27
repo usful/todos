@@ -41,7 +41,7 @@ function connect(BaseComponent) {
     }
 
     componentWillUnmount() {
-      state.removeListener('updated', this.updateComponent);
+      store.removeListener('updated', this.updateComponent);
     }
 
     render() {
