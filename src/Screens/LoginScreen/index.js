@@ -22,7 +22,6 @@ class Login extends Component {
 
   constructor(props) {
     super(props);
-    console.log('This component ', this);
     this.state = {
       username: "",
       password: ""
@@ -30,7 +29,6 @@ class Login extends Component {
   }
 
   handleLoginPress() {
-    console.log('loginUser');
     this.props.loginUser({
       variables: {
         user: {
@@ -40,9 +38,6 @@ class Login extends Component {
       }
     })
       .then(({ data }) => {
-        // Set apollo middleware
-
-        console.log('got data', data);
         this.props.updateStore({
           response: data,
           token: data.loginUser.token,
@@ -54,7 +49,6 @@ class Login extends Component {
   }
 
   render() {
-    console.log('props', this.props);
     return (
       <Container>
         <Content>
