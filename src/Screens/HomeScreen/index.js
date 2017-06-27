@@ -1,13 +1,10 @@
 import React, {Component} from 'react';
 import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import {
   Container,
   Content,
-  Card,
-  CardItem,
   Text,
-  Icon,
   List,
   ListItem,
   Spinner,
