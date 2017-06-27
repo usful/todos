@@ -20,7 +20,7 @@ import connect from '../../connect';
 class Home extends Component {
 
   renderItem(edge){
-    const done = () => {
+    const refetch = () => {
       const query = this.props.getLists;
       query.refetch(query.variables);
     };
@@ -28,7 +28,7 @@ class Home extends Component {
     return (
       <ListItem key={`list-${edge.node.id}`} onPress={()=>console.log('pressed item')} button>
         <TodoListCard
-          done={done}
+          refetch={refetch}
           data={edge.node}
           owner={edge.owner}
         />

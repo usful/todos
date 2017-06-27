@@ -31,7 +31,7 @@ class TodoListCard extends Component {
       deleteList,
       leaveList,
       store,
-      done,
+      refetch,
     } = this.props;
 
     const handleDelete = () => {
@@ -48,7 +48,7 @@ class TodoListCard extends Component {
         },
       }).then(({data}) => {
         console.log('success');
-        done();
+        refetch();
       }).catch((error) => {
         this.setState({ mutating: false });
         console.log('error', error);
@@ -76,7 +76,7 @@ class TodoListCard extends Component {
           <Text>
             { `Author: ${owner ? "You" : data.author}\n` }
             { `Created ${dateString}\n` }
-            { `${data.completedTodos.aggregations.count}/${data.totalTodos.aggregations.count} todos completed` }
+            { `${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed` }
           </Text>
         </CardItem>
       </Card>

@@ -5,10 +5,10 @@ import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
 import { LoginScreen, HomeScreen } from './Screens';
-import { scapholdUrl } from './config';
+import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
-const wsClient = new SubscriptionClient(`ws:${scapholdUrl}`, {
+const wsClient = new SubscriptionClient(scapholdWebSocketUrl, {
   reconnect: true
 });
 
@@ -29,7 +29,6 @@ const Navigator = StackNavigator({
 const genAuthMiddleWare = (app) => {
   return {
     applyMiddleware(req,next) {
-      console.log('---------------running query-------------');
       if(!req.options.headers) {
         req.options.headers = {};
       }
