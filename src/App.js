@@ -13,7 +13,6 @@ const client = new ApolloClient({
 const genAuthMiddleWare = (app) => {
   return {
     applyMiddleware(req,next) {
-      console.log('---------------running query-------------');
       if(!req.options.headers) {
         req.options.headers = {};
       }
