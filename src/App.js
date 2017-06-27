@@ -21,11 +21,6 @@ const client = new ApolloClient({
   networkInterface: networkInterfaceWithSubscriptions
 });
 
-const Navigator = StackNavigator({
-    Login: { screen: LoginScreen },
-    Home: {screen: HomeScreen }
-});
-
 const genAuthMiddleWare = (app) => {
   return {
     applyMiddleware(req,next) {
@@ -38,13 +33,19 @@ const genAuthMiddleWare = (app) => {
   }
 }
 
+const Navigator = StackNavigator({
+    Login: { screen: LoginScreen },
+    Home: {screen: HomeScreen }
+});
+
 class App extends Component {
 
   constructor(props) {
     super(props);
-    client.networkInterface.use([genAuthMiddleWare(this)]);
+    client.networkInterface.use([
+      genAuthMiddleWare(this)
+    ]);
   }
-
   render() {
     return (
       <ApolloProvider client={client}>
