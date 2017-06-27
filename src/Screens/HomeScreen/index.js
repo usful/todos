@@ -11,7 +11,6 @@ import {
   List,
   ListItem,
   Spinner,
-  Button,
 } from "native-base";
 import styles from './styles';
 
@@ -21,7 +20,6 @@ import connect from '../../connect';
 class Home extends Component {
 
   renderItem(edge){
-
     const done = () => {
       const query = this.props.getLists;
       query.refetch(query.variables);
@@ -75,7 +73,19 @@ query getUserTodoLists($id: ID!) {
       edges {
         node {
           id,
-          title
+          title,
+          author,
+          createdAt
+          totalTodos: todos {
+            aggregations {
+              count
+            }
+          }
+          completedTodos: todos(where: {complete:{eq:true}}) {
+            aggregations {
+              count
+            }
+          }
         }
         owner
       }

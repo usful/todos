@@ -6,9 +6,11 @@ import {
   CardItem,
   Text,
   Icon,
-  Spinner,
   Button,
+  Container,
 } from "native-base";
+import Spinner from 'react-native-spinkit';
+import Moment from 'moment';
 
 import styles from './styles';
 import connect from '../../connect';
@@ -20,61 +22,66 @@ class TodoListCard extends Component {
     this.state = {
       mutating: false,
     }
-    console.log('todolistcard',props);
   }
 
   render() {
     const {
       data,
       owner,
+      deleteList,
+      leaveList,
+      store,
+      done,
     } = this.props;
+
+    const handleDelete = () => {
+      this.setState({ mutating: true });
+      const handler = owner ? deleteList : leaveList;
+      const vars = owner ? {id: data.id} :
+        {
+          userId: store.userId,
+          todoListId: data.id
+        };
+      handler({
+        variables: {
+          input: vars
+        },
+      }).then(({data}) => {
+        console.log('success');
+        done();
+      }).catch((error) => {
+        this.setState({ mutating: false });
+        console.log('error', error);
+      });
+    }
+
+    const dateString = Moment(data.createdAt).calendar();
+
     return (
       <Card>
         <CardItem style={styles.cardContent}>
           <Text>{data.title}</Text>
-          {this.state.mutating ? <Spinner /> :
-            <Button
-              transparent
-              onPress={() => {handleDelete(this.props)}}
-            >
-              <Icon name={owner ? "trash" : "md-close"} active/>
-            </Button>
-          }
+          <Button
+            transparent
+            onPress={this.state.mutating ? null : handleDelete}
+            style={styles.button}
+          >
+            {this.state.mutating
+              ? <Spinner isVisible color="#0c49ff" size={25} type="Circle"/>
+              : <Icon name={owner ? "trash" : "md-close"} active/>
+            }
+          </Button>
+        </CardItem>
+        <CardItem>
+          <Text>
+            { `Author: ${owner ? "You" : data.author}\n` }
+            { `Created ${dateString}\n` }
+            { `${data.completedTodos.aggregations.count}/${data.totalTodos.aggregations.count} todos completed` }
+          </Text>
         </CardItem>
       </Card>
     );
   }
-}
-
-const handleDelete = (props) => {
-  const {
-    data,
-    owner,
-    deleteList,
-    leaveList,
-    store,
-    done,
-  } = this.props;
-  this.state.mutating = true;
-  const handler = owner ? deleteList : leaveList;
-  const vars = owner ? {id:data.id} :
-    {
-      userId:store.userId,
-      todoListId:data.id
-    };
-  handler({
-    variables: {
-      input: vars
-    },
-  }).then(({data}) => {
-    console.log('success');
-    done();
-    //const query = this.props.query;
-   // query.refetch(query.variables);
-  }).catch((error) => {
-    this.state.mutating = false;
-    console.log('error', error);
-  });
 }
 
 const leaveList = gql`

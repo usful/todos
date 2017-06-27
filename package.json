@@ -10,11 +10,13 @@
 		"apollo-client": "^1.5.0",
 		"events": "^1.1.1",
 		"lodash": "^4.17.4",
+		"moment": "^2.18.1",
 		"native-base": "^2.1.5",
 		"prop-types": "^15.5.10",
 		"react": "16.0.0-alpha.12",
 		"react-apollo": "^1.4.2",
 		"react-native": "0.45.1",
+		"react-native-spinkit": "^1.0.3",
 		"react-navigation": "^1.0.0-beta.11",
 		"subscriptions-transport-ws": "^0.7.3"
 	},
