@@ -10,11 +10,31 @@ const client = new ApolloClient({
   networkInterface: createNetworkInterface({ uri: scapholdUrl })
 })
 
+const genAuthMiddleWare = (app) => {
+  return {
+    applyMiddleware(req,next) {
+      console.log('---------------running query-------------');
+      if(!req.options.headers) {
+        req.options.headers = {};
+      }
+      req.options.headers['authorization'] = `Bearer ${app.props.store.token}`;
+      next();
+    }
+  }
+}
+
 const Navigator = StackNavigator({
     Login: { screen: LoginScreen },
 });
 
 export default class App extends Component {
+
+  constructor(props) {
+    super(props);
+    client.networkInterface.use([
+      genAuthMiddleWare(this)
+    ]);
+  }
   render() {
     return (
       <ApolloProvider client={client}>
