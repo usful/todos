@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
@@ -46,7 +45,11 @@ function connect(BaseComponent) {
 
     render() {
       return (
-        <BaseComponent store={store.getState()} updateStore={store.updateState} {...this.props} />
+        <BaseComponent
+          store={store.getState()}
+          updateStore={store.updateState}
+          {...this.props}
+        />
       );
     }
   }
