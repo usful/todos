@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
+import { TextInput, Text, View, TouchableOpacity } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { Container, Content, Text, List, ListItem, Spinner } from 'native-base';
+import { Container, Content, List, ListItem, Spinner } from 'native-base';
 import styles from './styles';
 
 import { TodoListCard } from '../../Components';
+import TodoListAdder from './TodoListAdder';
+
 import connect from '../../connect';
 
 class Home extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   renderItem(edge) {
     const refetch = () => {
       const query = this.props.getLists;
@@ -32,7 +39,7 @@ class Home extends Component {
       if (loading) {
         return <Spinner />;
       } else if (error) {
-        return <Text> Error has occured </Text>;
+        return <Text> Error has occurred </Text>;
       }
       return getUser.todoLists.edges.map(edge => {
         return this.renderItem(edge);
@@ -43,6 +50,7 @@ class Home extends Component {
       <Container>
         <Content>
           {view()}
+          <TodoListAdder userId={this.props.store.userId}/>
         </Content>
       </Container>
     );
