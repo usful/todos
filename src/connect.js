@@ -15,8 +15,8 @@ class Store extends EventEmitter {
   }
 
   updateState(newState) {
-    console.log('udating stote state');
     _.merge(this.state, newState);
+    console.log('store update', this.state);
     this.emit('updated');
   }
 }

@@ -30,13 +30,14 @@ class RegisterComponent extends Component {
       }
     })
       .then(({ data }) => {
+        const user = data.createUser.changedUser;
+        const token = data.createUser.token;
+
         console.log('registered user', data);
         this.props.updateStore({
           user: {
-            data: {
-              token: data.loginUser.token,
-              id: data.loginUser.user.id,
-            },
+            data: { ...user },
+            token,
             isAuthenticated: true,
           }
         });

@@ -85,13 +85,15 @@ query getUserTodoLists($id: ID!) {
   }
 }`;
 
-export default connect(
-  graphql(getTodoListsQuery, {
-    name: 'getLists',
-    options: props => ({
-      variables: {
-        id: props.store.userId,
-      },
-    }),
-  })(Home),
-);
+export default connect(Home);
+
+// export default connect(
+//   graphql(getTodoListsQuery, {
+//     name: 'getLists',
+//     options: props => ({
+//       variables: {
+//         id: props.store.userId,
+//       },
+//     }),
+//   })(Home),
+// );

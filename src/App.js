@@ -27,8 +27,9 @@ const genAuthMiddleWare = app => {
       if (!req.options.headers) {
         req.options.headers = {};
       }
-      if (app.props.store.user.data.token) {
-        req.options.headers['authorization'] = `Bearer ${app.props.store.user.data.token}`;
+      if (app.props.store.user.isAuthenticated) {
+        console.log('authenticated request', `Bearer ${app.props.store.user.token}`);
+        req.options.headers['authorization'] = `Bearer ${app.props.store.user.token}`;
       }
       next();
     },
