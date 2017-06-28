@@ -41,15 +41,6 @@ class Login extends Component {
       }).catch((error) => {
         console.log('there was an error sending the query', error);
       });
-
-      this.props.updateStore({
-        response: data,
-        token: data.loginUser.token,
-        userId: data.loginUser.user.id,
-      });
-    } catch (error) {
-      console.log('there was an error sending the query', error);
-    }
   }
 
   handleRegisterPress = () => {
@@ -63,7 +54,6 @@ class Login extends Component {
             <Icon name="rocket" size={120} color="white" />
             <Text style={styles.title}>To-do by Usful</Text>
           </View>
-
 
           <View style={styles.formContainer}>
             <TextInput
