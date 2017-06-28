@@ -8,16 +8,13 @@ import styles from "./styles";
 import connect from '../../connect';
 import { TextInput, Button, Link } from '../../Components';
 
-const background = require("../../../assets/shadow.png");
-const happyImg = require("../../../assets/happy.svg")
-
 class Login extends Component {
-
   constructor(props) {
     super(props);
+
     this.state = {
-      username: "",
-      password: ""
+      username: '',
+      password: '',
     };
   }
 
@@ -44,6 +41,15 @@ class Login extends Component {
       }).catch((error) => {
         console.log('there was an error sending the query', error);
       });
+
+      this.props.updateStore({
+        response: data,
+        token: data.loginUser.token,
+        userId: data.loginUser.user.id,
+      });
+    } catch (error) {
+      console.log('there was an error sending the query', error);
+    }
   }
 
   handleRegisterPress = () => {
@@ -97,8 +103,6 @@ const loginUserQuery = gql`
       token
     }
   }
-`
+`;
 
-const connectedComponent = connect(Login);
-
-export default graphql(loginUserQuery, {name: 'loginUser'})(connectedComponent);
+export default graphql(loginUserQuery, { name: 'loginUser' })(connect(Login));
