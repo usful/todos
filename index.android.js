@@ -4,10 +4,10 @@ import { AppRegistry } from 'react-native';
 
 import App from './src/App';
 
-export default class TODOApp extends Component {
-  render() {
-    return <App />
-  }
-}
+// export default class TODOApp extends Component {
+//   render() {
+//     return <App />
+//   }
+// }
 
-AppRegistry.registerComponent('ReactNativeScapholdTest', () => TODOApp);
+AppRegistry.registerComponent('ReactNativeScapholdTest', () => App);
