@@ -7,9 +7,6 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     minHeight:40,
   },
-  spinner: {
-    margin:10,
-  },
   titleContainer: {
     width:'60%',
     display:'flex',

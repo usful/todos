@@ -61,13 +61,11 @@ class TodoListCard extends Component {
       <View style={styles.card}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
-            {this.state.mutating
-              ? <Spinner style={styles.spinner} isVisible color="#0c49ff" size={25} type="Circle" />
-              :
-              <Button
-                onPress={() => this.state.mutating ? null : this.handleDelete()}
-                text={owner ? 'delete' : 'remove'}
-              />}
+            <Button
+              onPress={() => this.state.mutating ? null : this.handleDelete()}
+              loading={this.state.mutating}
+              text={owner ? 'delete' : 'remove'}
+            />
         </View>
         <View style={styles.cardContent}>
           <Text>
