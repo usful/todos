@@ -39,7 +39,6 @@ const genAuthMiddleWare = app => {
 const AuthNavigator = StackNavigator({
   Login: { screen: LoginScreen },
   Register: { screen: RegisterScreen },
-  Home: {screen: HomeScreen },
 }, {
    headerMode: 'none',
 });
