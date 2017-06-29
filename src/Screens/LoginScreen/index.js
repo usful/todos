@@ -34,10 +34,13 @@ class Login extends Component {
         },
       });
 
+      const user = data.loginUser.user;
+      const token = data.loginUser.token;
+
       this.props.updateStore({
         user: {
-          token: data.loginUser.token,
-          id: data.loginUser.user.id,
+          ...user,
+          token,
           isAuthenticated: true,
         },
       });
