@@ -34,7 +34,7 @@ class Home extends Component {
         onPress={this.onPress}
         refetch={refetch}
         data={item.node}
-        owner={item.owner}
+        owner={item.node.createdBy.id === this.props.store.user.id}
         userId={this.props.store.user.id}
       />
     );
@@ -62,7 +62,7 @@ class Home extends Component {
     return (
       <FlatList
         refreshing={loading}
-        data={getUser.todoLists.edges}
+        data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
         keyExtractor={(item) => item.node.id}
         renderItem={this.renderItem}
         ListEmptyComponent={
@@ -78,31 +78,55 @@ class Home extends Component {
   }
 }
 
+const fragments = {
+  todoList: gql`
+    fragment todoListInfo on TodoList {
+      id,
+      title,
+      createdBy {
+        id
+        username
+      },
+      createdAt
+      members{
+        aggregations{
+          count
+        }
+      }
+      totalTodos: todos {
+        aggregations {
+          count
+        }
+      }
+      completedTodos: todos(where: {done:{eq:true}}) {
+        aggregations {
+          count
+        }
+      }
+    }
+  `
+}
+
 const getTodoListsQuery = gql`
 query getUserTodoLists($id: ID!) {
   getUser(id: $id) {
     todoLists {
       edges {
         node {
-          id,
-          title,
-          createdAt
-          totalTodos: todos {
-            aggregations {
-              count
-            }
-          }
-          completedTodos: todos(where: {done:{eq:true}}) {
-            aggregations {
-              count
-            }
-          }
+          ...todoListInfo
         }
-        owner
+      }
+    }
+    createdLists {
+      edges {
+        node {
+          ...todoListInfo
+        }
       }
     }
   }
-}`;
+}
+${fragments.todoList}`;
 
 export default connect(
   graphql(getTodoListsQuery, {
@@ -111,6 +135,7 @@ export default connect(
       variables: {
         id: props.store.user.id,
       },
+      pollInterval:1000,
     }),
   })(Home),
 );

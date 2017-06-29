@@ -69,8 +69,9 @@ class TodoListCard extends Component {
         </View>
         <View style={styles.cardContent}>
           <Text>
-            {`Author: ${owner ? 'You' : data.author}\n`}
+            {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
             {`Created ${dateString}\n`}
+            {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
             {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
           </Text>
         </View>
