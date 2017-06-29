@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
-import { Card, CardItem, Text, Icon, Button, Container, H3 } from 'native-base';
 import Spinner from 'react-native-spinkit';
 import Moment from 'moment';
+import {
+  View,
+  Button,
+  Text
+} from 'react-native';
 
 import styles from './styles';
 import connect from '../../connect';
@@ -27,7 +31,7 @@ class TodoListCard extends Component {
     const vars = owner
       ? { id: data.id }
       : {
-          userId: store.userId,
+          userId: store.user.data.id,
           todoListId: data.id,
         };
 
@@ -52,27 +56,25 @@ class TodoListCard extends Component {
     const dateString = Moment(data.createdAt).calendar();
 
     return (
-      <Card>
-        <CardItem style={styles.cardContent}>
-          <H3>{data.title}</H3>
+      <View>
+        <View>
+          <Text>{data.title}</Text>
           <Button
-            transparent
             onPress={() => this.state.mutating ? null : this.handleDelete()}
-            style={styles.button}
           >
             {this.state.mutating
               ? <Spinner isVisible color="#0c49ff" size={25} type="Circle" />
-              : <Icon name={owner ? 'trash' : 'md-close'} active />}
+              : <Text>{owner ? 'delete' : 'remove'} </ Text>}
           </Button>
-        </CardItem>
-        <CardItem>
+        </View>
+        <View>
           <Text>
             {`Author: ${owner ? 'You' : data.author}\n`}
             {`Created ${dateString}\n`}
             {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
           </Text>
-        </CardItem>
-      </Card>
+        </View>
+      </View>
     );
   }
 }

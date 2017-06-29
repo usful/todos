@@ -16,31 +16,33 @@ class Login extends Component {
       username: '',
       password: '',
     };
+
   }
 
-  handleLoginPress() {
-    this.props.loginUser({
-      variables: {
-        user: {
-          username: this.state.username,
-          password: this.state.password
-        }
-      }
-    })
-      .then(({ data }) => {
-        this.props.updateStore({
+  handleLoginPress = async () => {
+    try{
+      const { data } = await this.props.loginUser({
+        variables: {
           user: {
-            data: {
-              token: data.loginUser.token,
-              id: data.loginUser.user.id,
-            },
-            isAuthenticated: true,
+            username: this.state.username,
+            password: this.state.password
           }
-        });
-        this.props.navigation.navigate('Home');
-      }).catch((error) => {
-        console.log('there was an error sending the query', error);
+        },
       });
+
+      this.props.updateStore({
+        user: {
+          data: {
+            token: data.loginUser.token,
+            id: data.loginUser.user.id,
+          },
+          isAuthenticated: true,
+        }
+      });
+      this.props.navigation.navigate('Home');
+    }catch(error){
+      console.log('there was an error sending the query', error);
+    }
   }
 
   handleRegisterPress = () => {
@@ -70,6 +72,7 @@ class Login extends Component {
             <View style={styles.buttons}>
               <Button
                 text={'Login'}
+                onPress={this.handleLoginPress}
               />
               <Link
                 text={'Register'}

@@ -28,8 +28,8 @@ const genAuthMiddleWare = app => {
         req.options.headers = {};
       }
       if (app.props.store.user.isAuthenticated) {
-        console.log('authenticated request', `Bearer ${app.props.store.user.token}`);
-        req.options.headers['authorization'] = `Bearer ${app.props.store.user.token}`;
+        console.log('authenticated request', `Bearer ${app.props.store.user.data.token}`);
+        req.options.headers['authorization'] = `Bearer ${app.props.store.user.data.token}`;
       }
       next();
     },
@@ -39,6 +39,7 @@ const genAuthMiddleWare = app => {
 const AuthNavigator = StackNavigator({
   Login: { screen: LoginScreen },
   Register: { screen: RegisterScreen },
+  Home: {screen: HomeScreen },
 }, {
    headerMode: 'none',
 });

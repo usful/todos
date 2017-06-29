@@ -19,36 +19,34 @@ class RegisterComponent extends Component {
     };
   }
 
-  handleRegisterPress = () => {
-    this.props.registerUser({
-      variables: {
-        user: {
-          email: this.state.email,
-          username: this.state.username,
-          password: this.state.password
-        }
-      }
-    })
-      .then(({ data }) => {
-        const user = data.createUser.changedUser;
-        const token = data.createUser.token;
-
-        console.log('registered user', data);
-        this.props.updateStore({
+  handleRegisterPress = async () => {
+    try {
+      const {data} = await this.props.registerUser({
+        variables: {
           user: {
-            data: { ...user },
-            token,
-            isAuthenticated: true,
+            email: this.state.email,
+            username: this.state.username,
+            password: this.state.password
           }
-        });
-        this.props.navigation.navigate('Home');
-      }).catch((error) => {
-        console.log('there was an error sending the query', error);
+        }
+      })
+      const user = data.createUser.changedUser;
+      const token = data.createUser.token;
+
+      this.props.updateStore({
+        user: {
+          data: { ...user, token, },
+          isAuthenticated: true,
+        }
       });
+      this.props.navigation.navigate('Home');
+    }catch(error) {
+      console.log('there was an error sending the query', error);
+    }
   }
 
   handleLoginPress = () => {
-    this.props.navigator.navigate('Login');
+    this.props.navigation.navigate('Login');
   }
 
   render() {
