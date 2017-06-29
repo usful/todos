@@ -19,6 +19,10 @@ class Home extends Component {
     super(props);
   }
 
+  onPress = () => {
+    console.log('ListCardPress');
+  }
+
   renderItem = ({ item }) => {
     const refetch = () => {
       const query = this.props.getLists;
@@ -27,6 +31,7 @@ class Home extends Component {
 
     return (
       <TodoListCard
+        onPress={this.onPress}
         refetch={refetch}
         data={item.node}
         owner={item.owner}
@@ -44,6 +49,14 @@ class Home extends Component {
           <ActivityIndicator animating />
         </View>
       );
+    }
+
+    if (error) {
+      return (
+        <View>
+          <Text>Error: {error.message}</Text>
+        </View>
+      )
     }
 
     return (
@@ -73,7 +86,6 @@ query getUserTodoLists($id: ID!) {
         node {
           id,
           title,
-          author,
           createdAt
           totalTodos: todos {
             aggregations {

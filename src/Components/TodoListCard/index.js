@@ -53,12 +53,12 @@ class TodoListCard extends Component {
   }
 
   render() {
-    const { data, owner } = this.props;
+    const { data, owner, onPress } = this.props;
 
     const dateString = Moment(data.createdAt).calendar();
 
     return (
-      <View style={styles.card}>
+      <View style={styles.card} onPress={onPress}>
         <View style={styles.cardContent}>
           <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
             <Button
