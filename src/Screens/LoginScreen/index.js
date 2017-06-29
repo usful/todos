@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { Image, View, Text } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
 import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
-import PropTypes from 'prop-types';
+import { graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from "./styles";
+
+import styles from './styles';
 import connect from '../../connect';
 import { TextInput, Button, Link } from '../../Components';
 
@@ -15,68 +15,70 @@ class Login extends Component {
     this.state = {
       username: '',
       password: '',
+      loading: false,
     };
   }
 
-  handleLoginPress() {
-    this.props.loginUser({
-      variables: {
-        user: {
-          username: this.state.username,
-          password: this.state.password
-        }
-      }
-    })
-      .then(({ data }) => {
-        this.props.updateStore({
+  async handleLoginPress() {
+    this.setState({ loading: true });
+
+    try {
+      const { data } = await this.props.loginUser({
+        variables: {
           user: {
-            data: {
-              token: data.loginUser.token,
-              id: data.loginUser.user.id,
-            },
-            isAuthenticated: true,
-          }
-        });
-        this.props.navigation.navigate('Home');
-      }).catch((error) => {
-        console.log('there was an error sending the query', error);
+            username: this.state.username,
+            password: this.state.password,
+          },
+        },
       });
+
+      this.props.updateStore({
+        user: {
+          token: data.loginUser.token,
+          id: data.loginUser.user.id,
+          isAuthenticated: true,
+        },
+      });
+
+      this.props.navigation.navigate('Home');
+    } catch (error) {
+      console.log('there was an error sending the query', error);
+    }
+
+    this.setState({ loading: false });
   }
 
   handleRegisterPress = () => {
     this.props.navigation.navigate('Register');
-  }
+  };
 
   render() {
     return (
       <View style={styles.container}>
-          <View style={styles.topContainer}>
-            <Icon name="rocket" size={120} color="white" />
-            <Text style={styles.title}>To-do by Usful</Text>
-          </View>
+        <View style={styles.topContainer}>
+          <Icon name="rocket" size={120} color="white" />
+          <Text style={styles.title}>To-do by Usful</Text>
+        </View>
 
-          <View style={styles.formContainer}>
-            <TextInput
-              placeholder={'Username'}
-              onChangeText={(username) => this.setState({username})}
-              value={this.state.username}
-            />
-            <TextInput
-              placeholder={'Password'}
-              onChangeText={(password) => this.setState({password})}
-              value={this.state.password}
-              secureTextEntry
-            />
-            <View style={styles.buttons}>
-              <Button
-                text={'Login'}
-              />
-              <Link
-                text={'Register'}
-                onPress={this.handleRegisterPress}
-              />
-            </View>
+        <View style={styles.formContainer}>
+          <TextInput
+            placeholder="Username"
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={username => this.setState({ username })}
+            value={this.state.username}
+          />
+          <TextInput
+            placeholder="Password"
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+            secureTextEntry
+          />
+          <View style={styles.buttons}>
+            <Button loading={this.state.loading} text="Login" onPress={() => this.handleLoginPress()} />
+            <Link text="Register" onPress={() => this.handleRegisterPress()} />
           </View>
+        </View>
 
       </View>
     );

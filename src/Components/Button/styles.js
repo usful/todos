@@ -1,16 +1,21 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  touchable: {
-    backgroundColor: 'white',
-    width: '40%',
-    height: 40,
+  container: {
     alignContent: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    minWidth: 50,
+    minHeight: 40,
+  },
+  touchable: {
+    backgroundColor: 'white',
     borderRadius: 6
   },
   text: {
-    width: '100%',
-    textAlign: 'center'
+    color: 'black',
+    fontSize: 14
   }
 });

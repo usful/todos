@@ -3,7 +3,10 @@ import { StackNavigator } from 'react-navigation';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 import { View, StatusBar, StyleSheet } from 'react-native';
-import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
+import {
+  SubscriptionClient,
+  addGraphQLSubscriptions,
+} from 'subscriptions-transport-ws';
 import { LoginScreen, HomeScreen, RegisterScreen } from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
@@ -28,7 +31,11 @@ const genAuthMiddleWare = app => {
         req.options.headers = {};
       }
       if (app.props.store.user.isAuthenticated) {
-        console.log('authenticated request', `Bearer ${app.props.store.user.token}`);
+        console.log(
+          'authenticated request',
+          `Bearer ${app.props.store.user.token}`,
+        );
+
         req.options.headers['authorization'] = `Bearer ${app.props.store.user.token}`;
       }
       next();
@@ -36,24 +43,30 @@ const genAuthMiddleWare = app => {
   };
 };
 
-const AuthNavigator = StackNavigator({
-  Login: { screen: LoginScreen },
-  Register: { screen: RegisterScreen },
-}, {
-   headerMode: 'none',
-});
+const AuthNavigator = StackNavigator(
+  {
+    Login: { screen: LoginScreen },
+    Register: { screen: RegisterScreen },
+  },
+  {
+    headerMode: 'none',
+  },
+);
 
-const Navigator = StackNavigator({
+const Navigator = StackNavigator(
+  {
     Auth: { screen: AuthNavigator },
-    Home: { screen: HomeScreen }
-}, {
-   headerMode: 'none',
-});
+    Home: { screen: HomeScreen },
+  },
+  {
+    headerMode: 'none',
+  },
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  }
+  },
 });
 
 class App extends Component {
@@ -64,10 +77,7 @@ class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar
-          backgroundColor="#e26e64"
-          barStyle="light-content"
-        />
+        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <ApolloProvider client={client}>
           <Navigator />
         </ApolloProvider>
