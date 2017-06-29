@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
-import {
-  Container,
-  Content,
-  Item,
-  Input,
-  Button,
-  Icon,
-  View,
-  Text,
-  Form,
-} from 'native-base';
-
+import { View, Text } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import styles from './styles';
 import connect from '../../connect';
+import { TextInput, Button, Link } from '../../Components';
 
 class Login extends Component {
   constructor(props) {
@@ -22,10 +15,13 @@ class Login extends Component {
     this.state = {
       username: '',
       password: '',
+      loading: false,
     };
   }
 
   async handleLoginPress() {
+    this.setState({ loading: true });
+
     try {
       const { data } = await this.props.loginUser({
         variables: {
@@ -37,49 +33,54 @@ class Login extends Component {
       });
 
       this.props.updateStore({
-        response: data,
-        token: data.loginUser.token,
-        userId: data.loginUser.user.id,
+        user: {
+          token: data.loginUser.token,
+          id: data.loginUser.user.id,
+          isAuthenticated: true,
+        },
       });
+
+      this.props.navigation.navigate('Home');
     } catch (error) {
       console.log('there was an error sending the query', error);
     }
+
+    this.setState({ loading: false });
   }
+
+  handleRegisterPress = () => {
+    this.props.navigation.navigate('Register');
+  };
 
   render() {
     return (
-      <Container>
-        <Content>
-          <Form>
-            <Item>
-              <Input
-                placeholder="Username"
-                onChangeText={username => this.setState({ username })}
-              />
-            </Item>
-            <Item last>
-              <Input
-                placeholder="Password"
-                onChangeText={password => this.setState({ password })}
-              />
-            </Item>
-            <Button onPress={() => this.handleLoginPress()}>
-              <Text>Click Me! </Text>
-            </Button>
-          </Form>
-          <Button
-            onPress={() => {
-              this.props.updateStore({
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJraW5kIjoic2NhcGhvbGQuc3VwZXJ1c2VyIiwiZXhwIjo4NjQwMDAwMDAwMDAwMDAwLCJpYXQiOjE0OTgyNDk4MDMsImF1ZCI6Ikp0Z2Z5WklRMnBKajlySThFOWU2MTdoUWNrMFJueEFuIiwiaXNzIjoiaHR0cHM6Ly9zY2FwaG9sZC5hdXRoMC5jb20vIiwic3ViIjoiYTQxNjkyMWQtNzM3MC00ZTA4LWFiODktMTA4ZWYxNmIwMmZjIn0.hPHB7MT-5nI9ezdA380LZAkPAgK0NpksFlA8T8Eq3wo',
-                userId: 'VXNlcjo2',
-              });
-              this.props.navigation.navigate('Home');
-            }}
-          >
-            <Text>Dev button</Text>
-          </Button>
-        </Content>
-      </Container>
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <Icon name="rocket" size={120} color="white" />
+          <Text style={styles.title}>To-do by Usful</Text>
+        </View>
+
+        <View style={styles.formContainer}>
+          <TextInput
+            placeholder="Username"
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={username => this.setState({ username })}
+            value={this.state.username}
+          />
+          <TextInput
+            placeholder="Password"
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+            secureTextEntry
+          />
+          <View style={styles.buttons}>
+            <Button loading={this.state.loading} text="Login" onPress={() => this.handleLoginPress()} />
+            <Link text="Register" onPress={() => this.handleRegisterPress()} />
+          </View>
+        </View>
+
+      </View>
     );
   }
 }

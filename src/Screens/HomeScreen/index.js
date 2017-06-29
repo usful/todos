@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import { TextInput, Text, View, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  View,
+} from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { Container, Content, List, ListItem, Spinner } from 'native-base';
 import styles from './styles';
 
 import { TodoListCard } from '../../Components';
@@ -15,44 +19,42 @@ class Home extends Component {
     super(props);
   }
 
-  renderItem(edge) {
+  renderItem = ({ item }) => {
     const refetch = () => {
       const query = this.props.getLists;
       query.refetch(query.variables);
     };
 
     return (
-      <ListItem
-        key={`list-${edge.node.id}`}
-        onPress={() => console.log('pressed item', edge.node.id)}
-        button
-      >
-        <TodoListCard refetch={refetch} data={edge.node} owner={edge.owner} />
-      </ListItem>
+      <TodoListCard refetch={refetch} data={item.node} owner={item.owner} />
     );
-  }
+  };
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
 
-    const view = () => {
-      if (loading) {
-        return <Spinner />;
-      } else if (error) {
-        return <Text> Error has occurred </Text>;
-      }
-      return getUser.todoLists.edges.map(edge => {
-        return this.renderItem(edge);
-      });
-    };
+    if (loading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator animating />
+        </View>
+      );
+    }
 
     return (
-      <Container>
-        <Content>
-          {view()}
-          <TodoListAdder userId={this.props.store.userId}/>
-        </Content>
-      </Container>
+      <FlatList
+        refreshing={loading}
+        data={[]}
+        renderItem={this.renderItem}
+        ListEmptyComponent={
+          <View style={styles.emptyList}>
+            <Text style={styles.emptyListText}>No TodoLists</Text>
+          </View>
+        }
+        ListFooterComponent={
+          <TodoListAdder userId={this.props.store.user.id} />
+        }
+      />
     );
   }
 }
@@ -89,7 +91,7 @@ export default connect(
     name: 'getLists',
     options: props => ({
       variables: {
-        id: props.store.userId,
+        id: props.store.user.id,
       },
     }),
   })(Home),
