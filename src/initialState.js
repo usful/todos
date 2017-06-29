@@ -3,6 +3,7 @@ export default {
   user: {
     isAuthenticated: false,
     token: null,
-    data: {},
+    id: null,
+    username: null
   }
 }

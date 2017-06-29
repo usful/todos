@@ -19,6 +19,8 @@ class RegisterComponent extends Component {
   }
 
   async handleRegisterPress() {
+    this.setState({ loading: true });
+
     try {
       const { data } = await this.props.registerUser({
         variables: {
@@ -35,7 +37,7 @@ class RegisterComponent extends Component {
 
       this.props.updateStore({
         user: {
-          data: { ...user },
+          ...user,
           token,
           isAuthenticated: true,
         },
@@ -45,6 +47,8 @@ class RegisterComponent extends Component {
     } catch (error) {
       console.log('there was an error sending the query', error);
     }
+
+    this.setState({ loading: false });
   }
 
   handleLoginPress() {
@@ -82,6 +86,7 @@ class RegisterComponent extends Component {
           <View style={styles.buttons}>
             <Button
               text="Register"
+              loading={this.state.loading}
               onPress={() => this.handleRegisterPress()}
             />
             <Link text="Login" onPress={() => this.handleLoginPress()} />
