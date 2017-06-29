@@ -2,7 +2,6 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   touchable: {
-    backgroundColor: 'white',
     width: '40%',
     height: 40,
     alignContent: 'center',
@@ -12,5 +11,11 @@ export default StyleSheet.create({
   text: {
     width: '100%',
     textAlign: 'center'
+  },
+  transparent: {
+    backgroundColor: 'transparent',
+  },
+  default: {
+    backgroundColor: 'white',
   }
 });

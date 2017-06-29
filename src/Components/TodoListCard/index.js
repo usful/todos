@@ -5,23 +5,27 @@ import Spinner from 'react-native-spinkit';
 import Moment from 'moment';
 import {
   View,
-  Button,
-  Text
+  Text,
+  StyleSheet,
 } from 'react-native';
 
 import styles from './styles';
+import {
+  Button
+} from '../index';
 import connect from '../../connect';
 
 class TodoListCard extends Component {
   constructor(props) {
     super(props);
+    console.log('-----refetch is -----', this.props.refetch);
 
     this.state = {
       mutating: false,
     };
   }
 
-  async handleDelete() {
+  handleDelete = async() => {
     const { data, owner, deleteList, leaveList, store, refetch } = this.props;
 
     this.setState({ mutating: true });
@@ -57,17 +61,19 @@ class TodoListCard extends Component {
 
     return (
       <View>
-        <View>
-          <Text>{data.title}</Text>
-          <Button
-            onPress={() => this.state.mutating ? null : this.handleDelete()}
-          >
+        <View style={styles.cardContent}>
+          <Text style={styles.contentItems}>{data.title}</Text>
             {this.state.mutating
               ? <Spinner isVisible color="#0c49ff" size={25} type="Circle" />
-              : <Text>{owner ? 'delete' : 'remove'} </ Text>}
-          </Button>
+              :
+              <Button
+                style={styles.contentItems}
+                onPress={() => this.state.mutating ? null : this.handleDelete()}
+                text={owner ? 'delete' : 'remove'}
+                transparent
+              />}
         </View>
-        <View>
+        <View style={styles.cardContent}>
           <Text>
             {`Author: ${owner ? 'You' : data.author}\n`}
             {`Created ${dateString}\n`}

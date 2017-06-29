@@ -14,20 +14,20 @@ import { TodoListCard } from '../../Components';
 import connect from '../../connect';
 
 class Home extends Component {
-   renderItem(edge) {
-     const refetch = () => {
-       const query = this.props.getLists;
-       query.refetch(query.variables);
-     };
-  
-     return (
-       <TodoListCard
-         key={`list-${edge.node.id}`}
-         onPress={() => console.log('pressed item', edge.node.id)}
-         refetch={refetch}
-         data={edge.node}
-         owner={edge.owner} />
-     );
+   renderItemGenerator(query) {
+     console.log(query);
+     return (data) => {
+       const refetch = () => {
+         query.refetch(query.variables);
+       };
+       return (
+         <TodoListCard
+           onPress={() => console.log('pressed item', data.item.node.id)}
+           refetch={refetch}
+           data={data.item.node}
+           owner={data.item.owner}/>
+       );
+     }
    }
 
    render() {
@@ -42,7 +42,8 @@ class Home extends Component {
        return (
          <FlatList
            data={getUser.todoLists.edges}
-           renderItem={this.renderItem}
+           renderItem={this.renderItemGenerator(this.props.getLists)}
+           keyExtractor={(item,index) => item.node.id}
        />);
      };
   

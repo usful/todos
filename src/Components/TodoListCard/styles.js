@@ -1,9 +1,12 @@
-export default {
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
   cardContent: {
-    display: 'flex',
+    display:'flex',
+    flexDirection:'row',
     justifyContent: 'space-between',
   },
-  button: {
-    paddingTop: 1,
+  contentItems: {
+    width:'40%',
   },
-};
+});
