@@ -1,13 +1,6 @@
 
 import React, { Component } from 'react';
-import { AppRegistry } from 'react-native';
-
+import { AppRegistry, AsyncStorage } from 'react-native';
 import App from './src/App';
-
-// export default class TODOApp extends Component {
-//   render() {
-//     return <App />
-//   }
-// }
 
 AppRegistry.registerComponent('ReactNativeScapholdTest', () => App);
