@@ -6,7 +6,17 @@ export default StyleSheet.create({
     flexDirection:'row',
     justifyContent: 'space-between',
   },
-  contentItems: {
+  title: {
     width:'40%',
   },
+  button: {
+    borderColor:"black",
+    borderWidth:1,
+    padding:2,
+  },
+  card: {
+    backgroundColor: "white",
+    margin: 6,
+    padding:10,
+  }
 });

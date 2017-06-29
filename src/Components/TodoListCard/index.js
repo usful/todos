@@ -60,14 +60,14 @@ class TodoListCard extends Component {
     const dateString = Moment(data.createdAt).calendar();
 
     return (
-      <View>
+      <View style={styles.card}>
         <View style={styles.cardContent}>
-          <Text style={styles.contentItems}>{data.title}</Text>
+          <Text style={styles.title}>{data.title}</Text>
             {this.state.mutating
               ? <Spinner isVisible color="#0c49ff" size={25} type="Circle" />
               :
               <Button
-                style={styles.contentItems}
+                style={styles.button}
                 onPress={() => this.state.mutating ? null : this.handleDelete()}
                 text={owner ? 'delete' : 'remove'}
                 transparent

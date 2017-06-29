@@ -41,6 +41,7 @@ class Home extends Component {
        }
        return (
          <FlatList
+           style={styles.list}
            data={getUser.todoLists.edges}
            renderItem={this.renderItemGenerator(this.props.getLists)}
            keyExtractor={(item,index) => item.node.id}
@@ -48,7 +49,7 @@ class Home extends Component {
      };
   
      return (
-       <View>
+       <View style={styles.container}>
          {view()}
        </View>
      );
