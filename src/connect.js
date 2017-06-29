@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
@@ -41,12 +40,16 @@ function connect(BaseComponent) {
     }
 
     componentWillUnmount() {
-      state.removeListener('updated', this.updateComponent);
+      store.removeListener('updated', this.updateComponent);
     }
 
     render() {
       return (
-        <BaseComponent store={store.getState()} updateStore={store.updateState} {...this.props} />
+        <BaseComponent
+          store={store.getState()}
+          updateStore={store.updateState}
+          {...this.props}
+        />
       );
     }
   }
