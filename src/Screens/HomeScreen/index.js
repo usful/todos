@@ -117,6 +117,7 @@ export default connect(
       variables: {
         id: props.store.user.id,
       },
+      pollInterval:1000,
     }),
   })(Home),
 );
