@@ -1,24 +1,32 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
-import { Card, CardItem, Text, Icon, Button, Container, H3 } from 'native-base';
 import Spinner from 'react-native-spinkit';
 import Moment from 'moment';
+import {
+  View,
+  Text,
+  StyleSheet,
+} from 'react-native';
 
 import styles from './styles';
+import {
+  Button
+} from '../index';
 import connect from '../../connect';
 
 class TodoListCard extends Component {
   constructor(props) {
     super(props);
+    console.log('-----refetch is -----', this.props.refetch);
 
     this.state = {
       mutating: false,
     };
   }
 
-  async handleDelete() {
-    const { data, owner, deleteList, leaveList, store, refetch } = this.props;
+  handleDelete = async() => {
+    const { data, owner, deleteList, leaveList, userId, refetch } = this.props;
 
     this.setState({ mutating: true });
 
@@ -27,7 +35,7 @@ class TodoListCard extends Component {
     const vars = owner
       ? { id: data.id }
       : {
-          userId: store.userId,
+          userId: userId,
           todoListId: data.id,
         };
 
@@ -37,13 +45,11 @@ class TodoListCard extends Component {
           input: vars,
         },
       });
-
       refetch();
     } catch (error) {
       console.log('error', error);
+      this.setState({ mutating: false });
     }
-
-    this.setState({ mutating: false });
   }
 
   render() {
@@ -52,27 +58,23 @@ class TodoListCard extends Component {
     const dateString = Moment(data.createdAt).calendar();
 
     return (
-      <Card>
-        <CardItem style={styles.cardContent}>
-          <H3>{data.title}</H3>
-          <Button
-            transparent
-            onPress={() => this.state.mutating ? null : this.handleDelete()}
-            style={styles.button}
-          >
-            {this.state.mutating
-              ? <Spinner isVisible color="#0c49ff" size={25} type="Circle" />
-              : <Icon name={owner ? 'trash' : 'md-close'} active />}
-          </Button>
-        </CardItem>
-        <CardItem>
+      <View style={styles.card}>
+        <View style={styles.cardContent}>
+          <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
+            <Button
+              onPress={() => this.state.mutating ? null : this.handleDelete()}
+              loading={this.state.mutating}
+              text={owner ? 'delete' : 'remove'}
+            />
+        </View>
+        <View style={styles.cardContent}>
           <Text>
             {`Author: ${owner ? 'You' : data.author}\n`}
             {`Created ${dateString}\n`}
             {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
           </Text>
-        </CardItem>
-      </Card>
+        </View>
+      </View>
     );
   }
 }

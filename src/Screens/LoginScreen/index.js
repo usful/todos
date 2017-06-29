@@ -17,7 +17,9 @@ class Login extends Component {
       password: '',
       loading: false,
     };
+
   }
+
 
   async handleLoginPress() {
     this.setState({ loading: true });
@@ -59,7 +61,6 @@ class Login extends Component {
           <Icon name="rocket" size={120} color="white" />
           <Text style={styles.title}>To-do by Usful</Text>
         </View>
-
         <View style={styles.formContainer}>
           <TextInput
             placeholder="Username"

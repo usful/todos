@@ -26,7 +26,12 @@ class Home extends Component {
     };
 
     return (
-      <TodoListCard refetch={refetch} data={item.node} owner={item.owner} />
+      <TodoListCard
+        refetch={refetch}
+        data={item.node}
+        owner={item.owner}
+        userId={this.props.store.user.id}
+      />
     );
   };
 
@@ -44,7 +49,8 @@ class Home extends Component {
     return (
       <FlatList
         refreshing={loading}
-        data={[]}
+        data={getUser.todoLists.edges}
+        keyExtractor={(item) => item.node.id}
         renderItem={this.renderItem}
         ListEmptyComponent={
           <View style={styles.emptyList}>
@@ -74,7 +80,7 @@ query getUserTodoLists($id: ID!) {
               count
             }
           }
-          completedTodos: todos(where: {complete:{eq:true}}) {
+          completedTodos: todos(where: {done:{eq:true}}) {
             aggregations {
               count
             }

@@ -9,7 +9,7 @@ export default class Button extends Component {
     onPress: () => {},
     text: 'Submit'
   };
-  
+
   render() {
     return (
       <TouchableOpacity

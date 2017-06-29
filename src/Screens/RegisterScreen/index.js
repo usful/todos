@@ -33,7 +33,6 @@ class RegisterComponent extends Component {
       const user = data.createUser.changedUser;
       const token = data.createUser.token;
 
-      console.log('registered user', data);
       this.props.updateStore({
         user: {
           data: { ...user },
