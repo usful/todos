@@ -17,9 +17,7 @@ class Login extends Component {
       password: '',
       loading: false,
     };
-
   }
-
 
   async handleLoginPress() {
     this.setState({ loading: true });

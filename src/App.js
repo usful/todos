@@ -7,7 +7,7 @@ import {
   SubscriptionClient,
   addGraphQLSubscriptions,
 } from 'subscriptions-transport-ws';
-import { LoginScreen, HomeScreen, RegisterScreen } from './Screens';
+import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen } from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
@@ -45,11 +45,13 @@ const AuthNavigator = StackNavigator({
 
 const Navigator = StackNavigator(
   {
+    Splash: { screen: SplashScreen },
     Auth: { screen: AuthNavigator },
     Home: { screen: HomeScreen },
   },
   {
     headerMode: 'none',
+    initialRouteName: 'Splash',
   },
 );
 
@@ -64,6 +66,7 @@ class App extends Component {
     super(props);
     client.networkInterface.use([genAuthMiddleWare(this)]);
   }
+
   render() {
     return (
       <View style={styles.container}>
