@@ -75,6 +75,11 @@ const fragments = {
         username
       },
       createdAt
+      members{
+        aggregations{
+          count
+        }
+      }
       totalTodos: todos {
         aggregations {
           count
