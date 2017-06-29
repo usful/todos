@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
-import {
-  SubscriptionClient,
-  addGraphQLSubscriptions,
-} from 'subscriptions-transport-ws';
-import { LoginScreen, HomeScreen } from './Screens';
+import { View, StatusBar, StyleSheet } from 'react-native';
+import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws';
+import { LoginScreen, HomeScreen, RegisterScreen } from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
@@ -29,15 +27,33 @@ const genAuthMiddleWare = app => {
       if (!req.options.headers) {
         req.options.headers = {};
       }
-      req.options.headers['authorization'] = `Bearer ${app.props.store.token}`;
+      if (app.props.store.user.isAuthenticated) {
+        console.log('authenticated request', `Bearer ${app.props.store.user.token}`);
+        req.options.headers['authorization'] = `Bearer ${app.props.store.user.token}`;
+      }
       next();
     },
   };
 };
 
-const Navigator = StackNavigator({
+const AuthNavigator = StackNavigator({
   Login: { screen: LoginScreen },
-  Home: { screen: HomeScreen },
+  Register: { screen: RegisterScreen },
+}, {
+   headerMode: 'none',
+});
+
+const Navigator = StackNavigator({
+    Auth: { screen: AuthNavigator },
+    Home: { screen: HomeScreen }
+}, {
+   headerMode: 'none',
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  }
 });
 
 class App extends Component {
@@ -47,9 +63,15 @@ class App extends Component {
   }
   render() {
     return (
-      <ApolloProvider client={client}>
-        <Navigator />
-      </ApolloProvider>
+      <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#e26e64"
+          barStyle="light-content"
+        />
+        <ApolloProvider client={client}>
+          <Navigator />
+        </ApolloProvider>
+      </View>
     );
   }
 }

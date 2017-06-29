@@ -3,37 +3,41 @@ import { Image, View, Text } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from "./styles";
 import connect from '../../connect';
 import { TextInput, Button, Link } from '../../Components';
 
-class Login extends Component {
+class RegisterComponent extends Component {
+
   constructor(props) {
     super(props);
-
     this.state = {
-      username: '',
-      password: '',
+      email: "",
+      username: "",
+      password: ""
     };
   }
 
-  handleLoginPress() {
-    this.props.loginUser({
+  handleRegisterPress = () => {
+    this.props.registerUser({
       variables: {
         user: {
+          email: this.state.email,
           username: this.state.username,
           password: this.state.password
         }
       }
     })
       .then(({ data }) => {
+        const user = data.createUser.changedUser;
+        const token = data.createUser.token;
+
+        console.log('registered user', data);
         this.props.updateStore({
           user: {
-            data: {
-              token: data.loginUser.token,
-              id: data.loginUser.user.id,
-            },
+            data: { ...user },
+            token,
             isAuthenticated: true,
           }
         });
@@ -43,19 +47,24 @@ class Login extends Component {
       });
   }
 
-  handleRegisterPress = () => {
-    this.props.navigation.navigate('Register');
+  handleLoginPress = () => {
+    this.props.navigator.navigate('Login');
   }
 
   render() {
     return (
       <View style={styles.container}>
           <View style={styles.topContainer}>
-            <Icon name="rocket" size={120} color="white" />
-            <Text style={styles.title}>To-do by Usful</Text>
+            <Icon name="spa" size={120} color="white" />
+            <Text style={styles.title}>Create Account</Text>
           </View>
 
           <View style={styles.formContainer}>
+            <TextInput
+              placeholder={'Email'}
+              onChangeText={(email) => this.setState({email})}
+              value={this.state.email}
+            />
             <TextInput
               placeholder={'Username'}
               onChangeText={(username) => this.setState({username})}
@@ -69,11 +78,12 @@ class Login extends Component {
             />
             <View style={styles.buttons}>
               <Button
-                text={'Login'}
-              />
-              <Link
                 text={'Register'}
                 onPress={this.handleRegisterPress}
+              />
+              <Link
+                text={'Login'}
+                onPress={this.handleLoginPress}
               />
             </View>
           </View>
@@ -83,16 +93,22 @@ class Login extends Component {
   }
 }
 
-const loginUserQuery = gql`
-  mutation LoginUser($user: LoginUserInput!) {
-    loginUser(input: $user) {
-      user {
-        id
-        username
-      }
-      token
+const registerUserQuery = gql`
+mutation CreateUser($user: CreateUserInput!) {
+  createUser(input: $user) {
+    changedUser {
+      id
+      username
+      email
     }
+    token
   }
-`;
+}
+`
 
-export default graphql(loginUserQuery, { name: 'loginUser' })(connect(Login));
+const connectedComponent = connect(RegisterComponent);
+
+export default graphql(
+  registerUserQuery,
+  { name: 'registerUser' }
+)(connectedComponent);
