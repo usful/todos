@@ -5,14 +5,19 @@ export default StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     justifyContent: 'space-between',
+    minHeight:40,
+  },
+  spinner: {
+    margin:10,
+  },
+  titleContainer: {
+    width:'60%',
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
   },
   title: {
-    width:'40%',
-  },
-  button: {
-    borderColor:"black",
-    borderWidth:1,
-    padding:2,
+    fontSize: 18,
   },
   card: {
     backgroundColor: "white",

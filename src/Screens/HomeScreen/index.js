@@ -1,59 +1,68 @@
 import React, { Component } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  View,
+} from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import {
-  Text,
-  FlatList,
-  View,
-
-} from 'react-native';
-import Spinner from 'react-native-spinkit';
-
 import styles from './styles';
+
 import { TodoListCard } from '../../Components';
+import TodoListAdder from './TodoListAdder';
+
 import connect from '../../connect';
 
 class Home extends Component {
-   renderItemGenerator(query) {
-     console.log(query);
-     return (data) => {
-       const refetch = () => {
-         query.refetch(query.variables);
-       };
-       return (
-         <TodoListCard
-           onPress={() => console.log('pressed item', data.item.node.id)}
-           refetch={refetch}
-           data={data.item.node}
-           owner={data.item.owner}/>
-       );
-     }
-   }
+  constructor(props) {
+    super(props);
+  }
 
-   render() {
-     const { loading, error, getUser } = this.props.getLists;
-  
-     const view = () => {
-       if (loading) {
-         return <Spinner isVisible color="#0c49ff" type="Circle" />;
-       } else if (error) {
-         return <Text> Error has occured {error}</Text>;
-       }
-       return (
-         <FlatList
-           style={styles.list}
-           data={getUser.todoLists.edges}
-           renderItem={this.renderItemGenerator(this.props.getLists)}
-           keyExtractor={(item,index) => item.node.id}
-       />);
-     };
-  
-     return (
-       <View style={styles.container}>
-         {view()}
-       </View>
-     );
-   }
+  renderItem = ({ item }) => {
+    const refetch = () => {
+      const query = this.props.getLists;
+      query.refetch(query.variables);
+    };
+
+    return (
+      <TodoListCard
+        refetch={refetch}
+        data={item.node}
+        owner={item.owner}
+        userId={this.props.store.user.id}
+      />
+    );
+  };
+
+  render() {
+    const { loading, error, getUser } = this.props.getLists;
+
+    if (loading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator animating />
+        </View>
+      );
+    }
+
+    return (
+      <FlatList
+        refreshing={loading}
+        data={getUser.todoLists.edges}
+        keyExtractor={(item) => item.node.id}
+        renderItem={this.renderItem}
+        ListEmptyComponent={
+          <View style={styles.emptyList}>
+            <Text style={styles.emptyListText}>No TodoLists</Text>
+          </View>
+        }
+        ListFooterComponent={
+          <TodoListAdder userId={this.props.store.user.id} />
+        }
+      />
+    );
+  }
 }
 
 const getTodoListsQuery = gql`
@@ -85,11 +94,11 @@ query getUserTodoLists($id: ID!) {
 
 export default connect(
   graphql(getTodoListsQuery, {
-  name: 'getLists',
+    name: 'getLists',
     options: props => ({
-     variables: {
-       id: props.store.user.data.id,
-     },
+      variables: {
+        id: props.store.user.id,
+      },
     }),
   })(Home),
 );

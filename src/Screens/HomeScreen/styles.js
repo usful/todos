@@ -1,13 +1,20 @@
-
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  container: {
-    backgroundColor: '#e26e64',
-    flex: 1
+  emptyList: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  list: {
-    marginTop: '10%',
-    flex: 1
+  emptyListText: {
+    fontSize: 24,
+    color: '#999',
+  },
+  container: {
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
   }
 });

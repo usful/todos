@@ -26,7 +26,7 @@ class TodoListCard extends Component {
   }
 
   handleDelete = async() => {
-    const { data, owner, deleteList, leaveList, store, refetch } = this.props;
+    const { data, owner, deleteList, leaveList, userId, refetch } = this.props;
 
     this.setState({ mutating: true });
 
@@ -35,7 +35,7 @@ class TodoListCard extends Component {
     const vars = owner
       ? { id: data.id }
       : {
-          userId: store.user.data.id,
+          userId: userId,
           todoListId: data.id,
         };
 
@@ -45,13 +45,11 @@ class TodoListCard extends Component {
           input: vars,
         },
       });
-
       refetch();
     } catch (error) {
       console.log('error', error);
+      this.setState({ mutating: false });
     }
-
-    this.setState({ mutating: false });
   }
 
   render() {
@@ -62,15 +60,13 @@ class TodoListCard extends Component {
     return (
       <View style={styles.card}>
         <View style={styles.cardContent}>
-          <Text style={styles.title}>{data.title}</Text>
+          <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
             {this.state.mutating
-              ? <Spinner isVisible color="#0c49ff" size={25} type="Circle" />
+              ? <Spinner style={styles.spinner} isVisible color="#0c49ff" size={25} type="Circle" />
               :
               <Button
-                style={styles.button}
                 onPress={() => this.state.mutating ? null : this.handleDelete()}
                 text={owner ? 'delete' : 'remove'}
-                transparent
               />}
         </View>
         <View style={styles.cardContent}>
