@@ -42,12 +42,16 @@ const AuthNavigator = StackNavigator({
   Register: { screen: RegisterScreen },
 }, {
    headerMode: 'none',
+   initialRouteName: 'Splash',
 });
 
 const HomeNavigator = StackNavigator({
   Home: { screen: HomeScreen },
-  List: { screen ListScreen },
-})
+  List: { screen: ListScreen },
+  }, {
+    headerMode: 'none',
+    initialRouteName: 'Home',
+  });
 
 const Navigator = StackNavigator(
   {
@@ -56,7 +60,7 @@ const Navigator = StackNavigator(
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Splash',
+    initialRouteName: 'Auth',
   },
 );
 

@@ -2,51 +2,43 @@ import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import Spinner from 'react-native-spinkit';
-import Moment from 'moment';
 import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 
 import styles from './styles';
-import {
-  Button
-} from '../index';
+import { Button, CheckBox } from '../index';
 import connect from '../../connect';
 
-class TodoListCard extends Component {
+class TodoCard extends Component {
   constructor(props) {
     super(props);
-    console.log('-----refetch is -----', this.props.refetch);
 
     this.state = {
       mutating: false,
     };
   }
 
-  handleDelete = async() => {
-    const { data, owner, deleteList, leaveList, userId, refetch } = this.props;
+  handleToggleDonePress = async() => {
+    const { updateTodo, refetch } = this.props;
 
     this.setState({ mutating: true });
 
-    const handler = owner ? deleteList : leaveList;
-
-    const vars = owner
-      ? { id: data.id }
-      : {
-          userId: userId,
-          todoListId: data.id,
-        };
-
     try {
-      const { data } = await handler({
+      const { data } = await updateTodo({
         variables: {
-          input: vars,
-        },
+          input: {
+            id: this.props.data.id,
+            done: !this.props.data.done
+          }
+        }
       });
+      console.log('res data', data);
       refetch();
-    } catch (error) {
+    } catch(error) {
       console.log('error', error);
       this.setState({ mutating: false });
     }
@@ -55,48 +47,41 @@ class TodoListCard extends Component {
   render() {
     const { data, owner, onPress } = this.props;
 
-    const dateString = Moment(data.createdAt).calendar();
-
     return (
-      <View style={styles.card} onPress={onPress}>
-        <View style={styles.cardContent}>
-          <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
-            <Button
-              onPress={() => this.state.mutating ? null : this.handleDelete()}
-              loading={this.state.mutating}
-              text={owner ? 'delete' : 'remove'}
+      <TouchableOpacity onPress={onPress}>
+        <View style={styles.card}>
+
+          <View style={styles.cardPreview}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>{data.title}</Text>
+            </View>
+            <View style={styles.authorContainer}>
+              <Text style={styles.author}>Created by: {data.author.username}</Text>
+            </View>
+          </View>
+
+          <View style={styles.cardButtons}>
+            <CheckBox
+              checked={data.done}
+              onPress={this.handleToggleDonePress}
             />
+          </View>
         </View>
-        <View style={styles.cardContent}>
-          <Text>
-            {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
-            {`Created ${dateString}\n`}
-            {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
-            {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
-          </Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 }
 
-const leaveList = gql`
-mutation removeMembership($input:RemoveFromMembershipConnectionInput!) {
-	removeFromMembershipConnection(input:$input){
-	  clientMutationId
-	}
-}`;
-
-const deleteTodoList = gql`
-mutation deleteTodoList($input: DeleteTodoListInput!) {
-  deleteTodoList(input:$input){
-    clientMutationId
+const updateTodoMutation = gql`
+  mutation UpdateTodo($input: UpdateTodoInput!) {
+    updateTodo(input: $input) {
+      changedTodo {
+        id
+        title
+        votes
+      }
+    }
   }
-}`;
+`;
 
-export default connect(
-  compose(
-    graphql(leaveList, { name: 'leaveList' }),
-    graphql(deleteTodoList, { name: 'deleteList' }),
-  )(TodoListCard),
-);
+export default graphql(updateTodoMutation, { name: 'updateTodo' })(TodoCard);
