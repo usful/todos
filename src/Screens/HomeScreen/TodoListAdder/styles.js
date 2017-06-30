@@ -1,11 +1,20 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
+  modal: {
+  },
   container: {
-    padding: 10,
+    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: 'rgba(52, 52, 52, 0.8)'
+  },
+  content: {
+    paddingTop: 20,
+    height: 200,
+    backgroundColor: 'white',
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#C7584E',
     padding: 10,
     margin: 10,
     borderRadius: 5,
@@ -19,8 +28,6 @@ export default StyleSheet.create({
     padding: 10,
     width: '100%',
     height: 50,
-    borderWidth: 2,
-    borderColor: '#999',
     backgroundColor: 'white',
   },
 });
