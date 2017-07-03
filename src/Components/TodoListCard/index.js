@@ -18,7 +18,6 @@ import connect from '../../connect';
 class TodoListCard extends Component {
   constructor(props) {
     super(props);
-    console.log('-----refetch is -----', this.props.refetch);
 
     this.state = {
       mutating: false,

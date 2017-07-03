@@ -11,7 +11,9 @@ import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen } from './Screens
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
-const wsClient = new SubscriptionClient(scapholdWebSocketUrl);
+const wsClient = new SubscriptionClient(scapholdWebSocketUrl, {
+  reconnect:true,
+});
 
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   createNetworkInterface({ uri: scapholdUrl }),

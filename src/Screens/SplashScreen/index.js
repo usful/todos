@@ -4,15 +4,22 @@ import connect from '../../connect';
 
 export default connect(class SplashScreen extends Component {
 
-  componentDidUpdate() {
-    if (this.props.store.initialized) {
-      setTimeout(() => {
-        if (this.props.store.user.isAuthenticated) {
-          this.props.navigation.navigate('Home');
-        } else {
-          this.props.navigation.navigate('Auth');
-        }
-      }, 500);
+  navigate = () => {
+    if (this.props.store.user.isAuthenticated) {
+      this.props.navigation.navigate('Home');
+    } else {
+      this.props.navigation.navigate('Auth');
+    };
+  }
+
+  constructor(props) {
+    super(props);
+    this.props.addStoreListener('initialized',this.navigate);
+  }
+
+  componentWillMount() {
+    if (this.props.store) {
+      this.navigate();
     }
   }
 

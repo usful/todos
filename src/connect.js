@@ -11,19 +11,18 @@ class Store extends EventEmitter {
     this.updateState = this.updateState.bind(this);
     AsyncStorage.getItem('app:state')
     .then((strState) => {
-      let loadedState;
       try {
-        loadedState = JSON.parse(strState);
-      } catch() {
-        loadedState = {};
+        const loadedState = JSON.parse(strState);
+        this.updateState(loadedState);
+      } catch(error) {
       }
 
       // Enable this to clear state
       // console.log(strState);
       // const loadedState = {};
-      console.log('loaded state', loadedState);
-      const newState = _.merge(loadedState, { initialized: true });
-      this.updateState(newState);
+      //const newState = _.merge(loadedState, { initialized: true });
+      //this.updateState(newState);
+      this.emit('initialized');
     });
   }
 
@@ -69,6 +68,7 @@ function connect(BaseComponent) {
         <BaseComponent
           store={store.getState()}
           updateStore={store.updateState}
+          addStoreListener={(eventString, handler) => {store.on(eventString,handler)}}
           {...this.props}
           renderCount={this.state.renderCount}
         />
