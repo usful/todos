@@ -7,6 +7,7 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 
 import styles from './styles';
@@ -57,24 +58,26 @@ class TodoListCard extends Component {
     const dateString = Moment(data.createdAt).calendar();
 
     return (
-      <View style={styles.card} onPress={onPress}>
-        <View style={styles.cardContent}>
-          <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
-            <Button
-              onPress={() => this.state.mutating ? null : this.handleDelete()}
-              loading={this.state.mutating}
-              text={owner ? 'delete' : 'remove'}
-            />
+      <TouchableOpacity onPress={onPress}>
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
+              <Button
+                onPress={() => this.state.mutating ? null : this.handleDelete()}
+                loading={this.state.mutating}
+                text={owner ? 'delete' : 'remove'}
+              />
+          </View>
+          <View style={styles.cardContent}>
+            <Text>
+              {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
+              {`Created ${dateString}\n`}
+              {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
+              {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
+            </Text>
+          </View>
         </View>
-        <View style={styles.cardContent}>
-          <Text>
-            {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
-            {`Created ${dateString}\n`}
-            {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
-            {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
-          </Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     );
   }
 }

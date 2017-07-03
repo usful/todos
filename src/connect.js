@@ -12,18 +12,13 @@ class Store extends EventEmitter {
     AsyncStorage.getItem('app:state')
     .then((strState) => {
       try {
-        const loadedState = JSON.parse(strState);
+        loadedState = JSON.parse(strState);
         this.updateState(loadedState);
-      } catch(error) {
+      } catch(e) {
+        console.log('error parsing store state ', e);
       }
-
-      // Enable this to clear state
-      // console.log(strState);
-      // const loadedState = {};
-      //const newState = _.merge(loadedState, { initialized: true });
-      //this.updateState(newState);
-      this.emit('initialized');
     });
+    this.emit('intialized');
   }
 
   getState() {

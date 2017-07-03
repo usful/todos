@@ -71,10 +71,6 @@ class Home extends Component {
     }
   }
 
-  onPress = () => {
-    console.log('ListCardPress');
-  }
-
   renderItem = ({ item }) => {
     const refetch = () => {
       const query = this.props.getLists;
@@ -83,14 +79,18 @@ class Home extends Component {
 
     return (
       <TodoListCard
-        onPress={this.onPress}
         refetch={refetch}
         data={item.node}
         owner={item.node.createdBy.id === this.props.store.user.id}
         userId={this.props.store.user.id}
+        onPress={() => this.handleListCardPress(item)}
       />
     );
   };
+
+  handleListCardPress = (item) => {
+    this.props.navigation.navigate('List', item);
+  }
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
