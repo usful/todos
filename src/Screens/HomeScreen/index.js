@@ -28,34 +28,48 @@ class Home extends Component {
         variables: {
           filter: {
             id: {
-              in: listIds
+              in: listIds,
             }
           }
         },
         updateQuery: (prev, {subscriptionData}) => {
+
           if (!subscriptionData) {
             return prev;
           }
-          const todoList = subscriptionData.data.subscribeToTodoList.value
-          const todoLists = prev.getUser.todoLists.edges.filter(
-            (edge) => {
-              return edge.node.id !== todoList.value.id;
-            }
-          )
-          const createdLists = prev.getUser.createdLists.edges.filter(
-            (edge) => {
-              return edge.node.id !== todoList.id;
-            }
-          )
+
+          const event = subscriptionData.data.subscribeToTodoList.mutation;
+          let todoLists = prev.getUser.todoLists.edges;
+          let createdLists = prev.getUser.createdLists.edges;
+          const todoList = subscriptionData.data.subscribeToTodoList.value;
+          if (event === 'deleteTodoList') {
+            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.id))
+            createdLists = createdLists.filter((edge) => (edge.node.id !== todoList.id))
+          } else if (event === 'updateTodoList') {
+            const mapFunction = (edge) => {
+              if (edge.node.id === todoList.id) {
+                return {
+                  node:todoList
+                };
+              }
+              return edge;
+            };
+            todoLists = todoLists.map(
+              mapFunction
+            );
+            createdLists = createdLists.map(
+              mapFunction
+            );
+          }
 
           return {
             ...prev,
-            getUser:{
+            getUser: {
               todoLists: {
-                edges:todoLists
+                edges: todoLists
               },
-              createdLists:{
-                edges:createdLists
+              createdLists: {
+                edges: createdLists
               }
             }
           }
@@ -72,14 +86,9 @@ class Home extends Component {
   }
 
   renderItem = ({ item }) => {
-    const refetch = () => {
-      const query = this.props.getLists;
-      query.refetch(query.variables);
-    };
 
     return (
       <TodoListCard
-        refetch={refetch}
         data={item.node}
         owner={item.node.createdBy.id === this.props.store.user.id}
         userId={this.props.store.user.id}
@@ -93,6 +102,7 @@ class Home extends Component {
   }
 
   render() {
+    console.log('rendering home page');
     const { loading, error, getUser } = this.props.getLists;
 
     if (loading) {
@@ -110,7 +120,8 @@ class Home extends Component {
         </View>
       )
     }
-
+    console.log(getUser.todoLists.edges);
+    console.log(getUser.createdLists.edges);
     return (
       <FlatList
         refreshing={loading}
@@ -182,12 +193,14 @@ ${fragments.todoList}`;
 
 const todoListSubscription = gql`
 subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
- subscribeToTodoList(filter:$filter, mutations:[deleteTodoList]) {
+ subscribeToTodoList(filter:$filter, mutations:[deleteTodoList,updateTodoList]) {
   value {
-    id
+    ...todoListInfo
   }
+  mutation
  }
-}`
+}
+${fragments.todoList}`
 
 export default connect(
   graphql(getTodoListsQuery, {
