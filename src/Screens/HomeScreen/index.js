@@ -23,13 +23,13 @@ class Home extends Component {
       const listIds = (todoLists.concat(createdLists)).map((edge) => {
         return (edge.node.id);
       });
-      this.subscription = this.props.getLists.subscribeToMore({
+      this.props.getLists.subscribeToMore({
         document: todoListSubscription,
         variables: {
           filter: {
             id: {
               in: listIds,
-            }
+            },
           }
         },
         updateQuery: (prev, {subscriptionData}) => {
@@ -41,16 +41,14 @@ class Home extends Component {
           const event = subscriptionData.data.subscribeToTodoList.mutation;
           let todoLists = prev.getUser.todoLists.edges;
           let createdLists = prev.getUser.createdLists.edges;
-          const todoList = subscriptionData.data.subscribeToTodoList.value;
+          const todoList = subscriptionData.data.subscribeToTodoList.edge;
           if (event === 'deleteTodoList') {
-            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.id))
-            createdLists = createdLists.filter((edge) => (edge.node.id !== todoList.id))
+            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.node.id))
+            createdLists = createdLists.filter((edge) => (edge.node.id !== todoList.node.id))
           } else if (event === 'updateTodoList') {
             const mapFunction = (edge) => {
-              if (edge.node.id === todoList.id) {
-                return {
-                  node:todoList
-                };
+              if (edge.node.id === todoList.node.id) {
+                return todoList;
               }
               return edge;
             };
@@ -188,8 +186,10 @@ ${fragments.todoList}`;
 const todoListSubscription = gql`
 subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
  subscribeToTodoList(filter:$filter, mutations:[deleteTodoList,updateTodoList]) {
-  value {
-    ...todoListInfo
+  edge {
+    node {
+      ...todoListInfo
+    }
   }
   mutation
  }

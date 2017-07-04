@@ -17,8 +17,9 @@ class Store extends EventEmitter {
       } catch(e) {
         console.log('error parsing store state ', e);
       }
+      this.updateState({initialized:true});
+      this.emit('initialized');
     });
-    this.emit('intialized');
   }
 
   getState() {

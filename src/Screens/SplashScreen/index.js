@@ -8,7 +8,7 @@ export default connect(class SplashScreen extends Component {
     if (this.props.store.user.isAuthenticated) {
       this.props.navigation.navigate('Home');
     } else {
-      this.props.navigation.navigate('Auth');
+      this.props.navigation.navigate('Login');
     };
   }
 
@@ -17,8 +17,8 @@ export default connect(class SplashScreen extends Component {
     this.props.addStoreListener('initialized',this.navigate);
   }
 
-  componentWillMount() {
-    if (this.props.store) {
+  componentWillMount(){
+    if(this.props.store.initialized) {
       this.navigate();
     }
   }
