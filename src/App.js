@@ -7,7 +7,7 @@ import {
   SubscriptionClient,
   addGraphQLSubscriptions,
 } from 'subscriptions-transport-ws';
-import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen } from './Screens';
+import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen, ListScreen } from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
@@ -37,21 +37,30 @@ const genAuthMiddleWare = app => {
 };
 
 const AuthNavigator = StackNavigator({
+  Splash: { screen: SplashScreen },
   Login: { screen: LoginScreen },
   Register: { screen: RegisterScreen },
 }, {
    headerMode: 'none',
+   initialRouteName: 'Splash',
 });
+
+const HomeNavigator = StackNavigator({
+  Home: { screen: HomeScreen },
+  List: { screen: ListScreen },
+  }, {
+    headerMode: 'none',
+    initialRouteName: 'Home',
+  });
 
 const Navigator = StackNavigator(
   {
-    Splash: { screen: SplashScreen },
     Auth: { screen: AuthNavigator },
-    Home: { screen: HomeScreen },
+    Home: { screen: HomeNavigator },
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Splash',
+    initialRouteName: 'Auth',
   },
 );
 

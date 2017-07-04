@@ -14,13 +14,12 @@ class Store extends EventEmitter {
       let loadedState;
       try {
         loadedState = JSON.parse(strState);
-      } catch() {
+      } catch(e) {
         loadedState = {};
       }
 
       // Enable this to clear state
-      // console.log(strState);
-      // const loadedState = {};
+      // loadedState = {};
       console.log('loaded state', loadedState);
       const newState = _.merge(loadedState, { initialized: true });
       this.updateState(newState);
