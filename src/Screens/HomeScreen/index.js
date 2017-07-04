@@ -102,7 +102,6 @@ class Home extends Component {
   }
 
   render() {
-    console.log('rendering home page');
     const { loading, error, getUser } = this.props.getLists;
 
     if (loading) {
@@ -120,8 +119,6 @@ class Home extends Component {
         </View>
       )
     }
-    console.log(getUser.todoLists.edges);
-    console.log(getUser.createdLists.edges);
     return (
       <FlatList
         refreshing={loading}
