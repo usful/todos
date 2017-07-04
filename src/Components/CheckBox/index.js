@@ -16,9 +16,7 @@ export default class CheckBox extends Component {
     };
 
     return (
-      <TouchableOpacity style={touchStyle} onPress={onPress}>
-        <Text>d</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={touchStyle} onPress={onPress} />
     );
   }
 }
