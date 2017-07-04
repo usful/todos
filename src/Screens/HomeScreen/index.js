@@ -80,9 +80,6 @@ class Home extends Component {
 
   constructor(props) {
     super(props);
-    this.state={
-      subscriptionUpdates: 0
-    }
   }
 
   renderItem = ({ item }) => {
