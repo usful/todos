@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import connect from '../../connect';
 
 export default connect(class SplashScreen extends Component {
@@ -10,7 +10,7 @@ export default connect(class SplashScreen extends Component {
         if (this.props.store.user.isAuthenticated) {
           this.props.navigation.navigate('Home');
         } else {
-          this.props.navigation.navigate('Auth');
+          this.props.navigation.navigate('Login');
         }
       }, 500);
     }
@@ -19,6 +19,7 @@ export default connect(class SplashScreen extends Component {
   render() {
     return (
       <View>
+        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <Text>Loading...</Text>
       </View>
     );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, View, Text } from 'react-native';
+import { Image, View, Text, StatusBar } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import PropTypes from 'prop-types';
@@ -58,6 +58,7 @@ class RegisterComponent extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <View style={styles.topContainer}>
           <Icon name="spa" size={120} color="white" />
           <Text style={styles.title}>Create Account</Text>
