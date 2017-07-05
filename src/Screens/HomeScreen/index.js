@@ -23,7 +23,10 @@ class Home extends Component {
       const listIds = (todoLists.concat(createdLists)).map((edge) => {
         return (edge.node.id);
       });
-      this.props.getLists.subscribeToMore({
+      if(this.unsubscribeHandler) {
+        this.unsubscribeHandler();
+      }
+      this.unsubscribeHandler = this.props.getLists.subscribeToMore({
         document: todoListSubscription,
         variables: {
           filter: {
@@ -116,6 +119,7 @@ class Home extends Component {
     }
     return (
       <FlatList
+        style={styles.listContainer}
         refreshing={loading}
         data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
         keyExtractor={(item) => item.node.id}

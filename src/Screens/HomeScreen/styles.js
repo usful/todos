@@ -16,5 +16,9 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
+  },
+  listContainer: {
+    backgroundColor:'#e26e64',
+    paddingTop:20,
   }
 });
