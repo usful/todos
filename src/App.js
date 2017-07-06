@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
-import { View, StatusBar, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
   SubscriptionClient,
   addGraphQLSubscriptions,
@@ -81,7 +81,6 @@ class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <ApolloProvider client={client}>
           <Navigator />
         </ApolloProvider>

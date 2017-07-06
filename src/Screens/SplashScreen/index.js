@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import connect from '../../connect';
 
 export default connect(class SplashScreen extends Component {
@@ -26,6 +26,7 @@ export default connect(class SplashScreen extends Component {
   render() {
     return (
       <View>
+        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <Text>Loading...</Text>
       </View>
     );

@@ -4,6 +4,9 @@ import {
   FlatList,
   Text,
   View,
+  Modal,
+  TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -78,6 +81,10 @@ class Home extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      showListAdder: false,
+    };
   }
 
   renderItem = ({ item }) => {
@@ -96,9 +103,17 @@ class Home extends Component {
     this.props.navigation.navigate('List', item);
   }
 
+  handleAddListPress = () => {
+    this.setState({ showListAdder: true });
+  }
+
+  handleCloseListAdder = () => {
+    this.setState({ showListAdder: false });
+  }
+
   render() {
     const { loading, error, getUser } = this.props.getLists;
-
+    console.log('todoLists', this.props);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -115,20 +130,35 @@ class Home extends Component {
       )
     }
     return (
-      <FlatList
-        refreshing={loading}
-        data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
-        keyExtractor={(item) => item.node.id}
-        renderItem={this.renderItem}
-        ListEmptyComponent={
-          <View style={styles.emptyList}>
-            <Text style={styles.emptyListText}>No TodoLists</Text>
-          </View>
-        }
-        ListFooterComponent={
-          <TodoListAdder userId={this.props.store.user.id} />
-        }
-      />
+      <View>
+        <StatusBar backgroundColor="#C7584E" barStyle="light-content" />
+        <View style={styles.menu}>
+          <TouchableOpacity
+            onPress={this.handleAddListPress}
+            style={styles.addButton}
+          >
+            <Text style={styles.addButtonText}>
+              Add List
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <TodoListAdder
+          visible={this.state.showListAdder}
+          close={this.handleCloseListAdder}
+          userId={this.props.store.user.id}
+        />
+        <FlatList
+          refreshing={loading}
+          data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
+          keyExtractor={(item) => item.node.id}
+          renderItem={this.renderItem}
+          ListEmptyComponent={
+            <View style={styles.emptyList}>
+              <Text style={styles.emptyListText}>No TodoLists</Text>
+            </View>
+          }
+        />
+      </View>
     );
   }
 }

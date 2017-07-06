@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -58,6 +58,7 @@ class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#e26e64" barStyle="light-content" />
         <View style={styles.topContainer}>
           <Icon name="rocket" size={120} color="white" />
           <Text style={styles.title}>To-do by Usful</Text>
