@@ -26,7 +26,7 @@ class TodoListCard extends Component {
   }
 
   handleDelete = async() => {
-    const { data, owner, deleteList, leaveList, userId, refetch } = this.props;
+    const { data, owner, deleteList, leaveList, userId } = this.props;
 
     this.setState({ mutating: true });
 
@@ -45,7 +45,6 @@ class TodoListCard extends Component {
           input: vars,
         },
       });
-      refetch();
     } catch (error) {
       console.log('error', error);
       this.setState({ mutating: false });
