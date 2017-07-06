@@ -54,13 +54,38 @@ export default StyleSheet.create({
   leftContainer:{
     display:'flex',
     justifyContent:'center',
-    maxWidth:'70%',
+    width:'50%',
 
   },
   rightContainer:{
     display:'flex',
     flexDirection:'column',
     alignItems:'center',
-    width:'30%',
+    justifyContent:'center',
+    width:'50%',
   },
+  redCircle:{
+    backgroundColor:"#e26e64",
+    borderColor:"#e26e64",
+    borderWidth:1,
+    borderRadius: 10,
+    width:20,
+    height:20,
+    padding:2,
+    alignItems:'center',
+    justifyContent: 'center',
+    marginRight:3,
+  },
+  whiteCircle:{
+    backgroundColor:"white",
+    borderColor:"white",
+    borderWidth:1,
+    borderRadius: 10,
+    width:20,
+    height:20,
+    padding:2,
+    alignItems:'center',
+    justifyContent: 'center',
+    marginRight:3,
+  }
 });

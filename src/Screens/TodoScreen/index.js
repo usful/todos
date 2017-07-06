@@ -47,6 +47,7 @@ class TodoScreen extends Component {
       });
       this.setState({
         vote: data.createVote,
+        count: this.state.count+1,
       });
     }catch(error){
       console.log('error', error);
@@ -65,6 +66,7 @@ class TodoScreen extends Component {
       });
       this.setState({
         vote:null,
+        count: this.state.count-1
       });
     }catch(error){
       console.log('error', error);
@@ -75,7 +77,8 @@ class TodoScreen extends Component {
     super(props);
     const { node } = props.navigation.state.params;
     this.state = {
-      vote: node.usersVote.edges[0]
+      vote: node.usersVote.edges[0],
+      count: node.votes.aggregations.count,
     };
   }
 
@@ -115,13 +118,17 @@ class TodoScreen extends Component {
                 style={buttonStyle}
                 onPress={voted ? this.deleteVoteHandler : this.addVoteHandler}
               >
-                <Icon
-                  name={voted ? "arrow-down" : "arrow-up"}
-                  size={16}
-                  color={voted ? "white" : "#e26e64"}
-                />
+                <View style={voted ? styles.whiteCircle : styles.redCircle}>
+                  <Text style={
+                    {
+                      fontWeight:'bold',
+                      backgroundColor:'transparent',
+                      color: !voted ? "white" : "#e26e64"
+                    }
+                  }>{this.state.count}</Text>
+                </View>
                 <Text style={{fontWeight:'bold',color:voted ? "white" : "#e26e64"}}>
-                  {voted?'Undo': 'Vote'}
+                  {voted?'Vote Down': 'Vote Up'}
                 </Text>
               </TouchableOpacity>
             </View>
