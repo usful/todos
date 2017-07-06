@@ -14,7 +14,6 @@ import { Button, CheckBox } from '../index';
 class TodoCard extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       mutating: false,
     };
@@ -71,7 +70,7 @@ class TodoCard extends Component {
                 color="#e26e64"
               />
             </View>
-            <Text>{`Upvotes:\t${data.votes.aggregations.count}`}</Text>
+            <Text>{`votes:\t${data.votes.length}`}</Text>
           </View>
         </View>
       </TouchableOpacity>

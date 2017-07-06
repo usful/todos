@@ -116,7 +116,6 @@ class Home extends Component {
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
-    console.log('todoLists', this.props);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -194,7 +193,7 @@ const fragments = {
       }
     }
   `
-}
+};
 
 const getTodoListsQuery = gql`
 query getUserTodoLists($id: ID!) {
@@ -218,7 +217,7 @@ query getUserTodoLists($id: ID!) {
 ${fragments.todoList}`;
 
 const todoListSubscription = gql`
-subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
+subscription ($filter: TodoListSubscriptionFilter) {
  subscribeToTodoList(filter:$filter, mutations:[deleteTodoList,updateTodoList]) {
   edge {
     node {
@@ -228,7 +227,7 @@ subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
   mutation
  }
 }
-${fragments.todoList}`
+${fragments.todoList}`;
 
 export default connect(
   graphql(getTodoListsQuery, {

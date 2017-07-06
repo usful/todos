@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import _ from 'lodash';
 import styles from './styles';
 import { TodoCard } from '../../Components';
 import connect from '../../connect';
@@ -37,8 +38,6 @@ class ListScreen extends Component {
           let edges = prev.getTodoList.todos.edges;
           const todoEdge = subscriptionData.data.subscribeToTodo.edge;
           const event = subscriptionData.data.subscribeToTodo.mutation;
-          console.log('event----', event);
-          // can factor this out into a function for use in vote subscription as well vvvvv//
           if (event === 'createTodo') {
             edges = edges.concat(todoEdge);
           }else if (event == 'deleteTodo') {
@@ -51,7 +50,6 @@ class ListScreen extends Component {
               return edge;
             })
           }
-          // can factor this out into a function for use in vot subscription as well ^^^^^//
           return {
             ...prev,
             getTodoList:{
@@ -76,7 +74,7 @@ class ListScreen extends Component {
 
   render() {
     const { loading, error, getTodoList } = this.props.getList;
-
+    console.log('getLists',this.props.getList);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -92,12 +90,11 @@ class ListScreen extends Component {
         </View>
       )
     }
-
     return (
       <FlatList
         style={styles.listContainer}
         refreshing={loading}
-        data={getTodoList.todos.edges}
+        data={_.orderBy(getTodoList.todos.edges,['node.votes.length'],['desc'])}
         keyExtractor={(item) => item.node.id}
         renderItem={this.renderItem}
         ListEmptyComponent={
@@ -119,24 +116,7 @@ const fragments = {
       text
       createdAt
       modifiedAt
-      votes{
-        aggregations{
-          count
-        }
-      }
-      usersVote:votes(where:{
-        user:{
-          id:{
-            eq:$id
-          }
-        }
-      }){
-        edges{
-          node{
-            id
-          }
-        }
-      }
+      votes
       author {
         username
       }
@@ -145,7 +125,7 @@ const fragments = {
 }
 
 const getTodoListQuery = gql`
-query GetListTodos($listId: ID!,$id: ID) {
+query GetListTodos($listId: ID!) {
   getTodoList(id: $listId) {
     todos {
       edges {
@@ -163,7 +143,7 @@ ${fragments.todoFragment}
 `;
 
 const todosSubscription = gql`
-subscription subscribeToTodos($filter: TodoSubscriptionFilter,$id: ID) {
+subscription subscribeToTodos($filter: TodoSubscriptionFilter) {
   subscribeToTodo(filter:$filter, mutations:[createTodo,updateTodo,deleteTodo]){
     mutation
     edge {
@@ -175,9 +155,6 @@ subscription subscribeToTodos($filter: TodoSubscriptionFilter,$id: ID) {
 }
 ${fragments.todoFragment}
 `;
-
-const voteSubscription = gql`
-`; //todo a vote subscription to watch for when votes for todo's in the todoLists are created/deleted
 
 export default connect(graphql(getTodoListQuery, {
     name: 'getList',

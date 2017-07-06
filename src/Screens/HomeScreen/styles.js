@@ -29,6 +29,6 @@ export default StyleSheet.create({
   },
   listContainer: {
     backgroundColor:'#e26e64',
-    paddingTop:20,
+    height:'100%',
   }
 });

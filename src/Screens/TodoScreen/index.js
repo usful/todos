@@ -15,69 +15,57 @@ import connect from '../../connect';
 
 class TodoScreen extends Component {
 
-  handleToggleDonePress = async() => {
+  handleUpdate = async(input, errorHandler = ()=>{}) => {
     const { updateTodo } = this.props;
-    const { node } = this.props.navigation.state.params;
     try {
       await updateTodo({
         variables: {
-          input: {
-            id: this.props.data.id,
-            done: !this.props.data.done
-          }
+          input
         }
       });
     } catch(error) {
       console.log('error', error);
+      errorHandler();
     }
   };
 
-  voteAction = async() => {
-    const {addVote,deleteVote} = this.props;
-    try {
-      if (!(this.state.vote)) {
-        const {data} = await addVote({
-          variables: {
-            input: {
-              userId: this.props.store.user.id,
-              todoId: this.props.navigation.state.params.node.id
-            }
-          }
-        });
+  voteAction = (voted) => {
+    let votes = [];
+    if (voted) {
+      votes = this.state.votes.filter(
+        (val) => (val !== this.props.store.user.id));
+    }else{
+      votes = this.state.votes.concat([this.props.store.user.id]);
+    }
+    this.setState({
+      votes: votes
+    });
+    this.handleUpdate(
+      {
+        id: this.props.navigation.state.params.node.id,
+        votes
+      },
+      ()=>{
         this.setState({
-          vote: data.voteMutation.changedVote
-        });
-      }else{
-        await deleteVote({
-          variables:{
-            input:{
-              id: this.state.vote.id,
-            }
-          }
-        });
-        this.setState({
-          vote:null
+          votes: this.state.votes,
         });
       }
-    }catch(error){
-      console.log('error', error);
-    }
+    );
   };
 
   constructor(props) {
     super(props);
     const { node } = props.navigation.state.params;
-    const edge = node.usersVote.edges[0];
     this.state = {
-      vote: edge ? edge.node : null,
+      votes: node.votes
     }
   }
 
 
   render(){
     const { node } = this.props.navigation.state.params;
-    const voted = !!(this.state.vote);
-    const buttonStyle = StyleSheet.flatten([styles.votingButton,voted ? styles.voted: styles.notVoted])
+    const voted = this.state.votes.indexOf(this.props.store.user.id) !== -1
+    const buttonStyle = StyleSheet.flatten([styles.votingButton,voted ? styles.voted: styles.notVoted]);
     return (
       <ScrollView style={styles.container}>
         <View
@@ -99,7 +87,16 @@ class TodoScreen extends Component {
               <View style={styles.checkboxContainer}>
                 <Text style={{marginRight:10}}>Done:</Text>
                 <CheckBox
-                  onPress={this.handleToggleDonePress}
+                  onPress={
+                    () => {
+                      this.handleUpdate(
+                        {
+                          id: node.id,
+                          done: !node.done
+                        }
+                      )
+                    }
+                  }
                   checked={node.done}
                   color="#e26e64"
                   borderColor="#e26e64"
@@ -108,13 +105,7 @@ class TodoScreen extends Component {
               <TouchableOpacity
                 style={buttonStyle}
                 onPress={()=>{
-                  this.voteAction();
-                  //const input = {
-                  //  id: node.id,
-                  //};
-                  //this.handleUpdate(input);
-                  //Todo change listScreen to also watch votes. Will allow this to be one
-                  // mutation instead of two
+                  this.voteAction(voted);
                 }}
               >
                 <Icon
@@ -122,7 +113,9 @@ class TodoScreen extends Component {
                   size={16}
                   color={voted ? "white" : "#e26e64"}
                 />
-                <Text style={{fontWeight:'bold',color:voted ? "white" : "#e26e64"}}>  {voted?'Undo': 'Vote'}</Text>
+                <Text style={{fontWeight:'bold',color:voted ? "white" : "#e26e64"}}>
+                  {voted?'Undo': 'Vote'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -146,26 +139,4 @@ const updateTodoMutation = gql`
   }
 `;
 
-const addVote = gql`
-  mutation addVote($input: CreateVoteInput!){
-    voteMutation:createVote(input:$input){
-      changedVote{
-        id
-      }
-    }
-  }
-`;
-
-const deleteVote = gql`
-  mutation deleteVote($input: DeleteVoteInput!){
-    voteMutation: deleteVote(input:$input){
-      clientMutationId
-    }
-  }
-`;
-
-export default connect(compose(
-  graphql(updateTodoMutation, { name: 'updateTodo' }),
-  graphql(addVote, {name: 'addVote'}),
-  graphql(deleteVote, {name: 'deleteVote'}),
-)(TodoScreen));
+export default connect(graphql(updateTodoMutation, { name: 'updateTodo' })(TodoScreen));
