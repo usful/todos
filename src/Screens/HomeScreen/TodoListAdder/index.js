@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { TextInput, Text, View, TouchableOpacity } from 'react-native';
+import { TextInput, Text, View, TouchableOpacity, Modal } from 'react-native';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import styles from './styles';
 
 class TodoListAdder extends Component {
@@ -20,34 +20,49 @@ class TodoListAdder extends Component {
       const result = await this.props.createTodoList({
         variables: {
           todoList: {
-            author: this.props.userId,
+            createdById: this.props.userId,
             title: this.state.newTodoList,
           },
         },
       });
-
       console.log(result);
     } catch (error) {
       console.error(error);
     }
+
+    this.props.close();
   }
 
   render() {
+    const { visible, close } = this.props;
     return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={text => this.setState({ newTodoList: text })}
-          onEndEditing={() => this.addNewTodo()}
-          value={this.state.newTodoList}
-          placeholder="Todo List name..."
-        />
-        <TouchableOpacity onPress={() => this.addNewTodo()}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>Add new TodoList</Text>
+      <Modal
+        animationType={"slide"}
+        transparent={true}
+        visible={visible}
+        onRequestClose={close}
+        style={styles.modal}
+      >
+        <View style={styles.container}>
+          <View style={styles.content}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={text => this.setState({ newTodoList: text })}
+              onEndEditing={() => this.addNewTodo()}
+              value={this.state.newTodoList}
+              placeholder="Todo List name..."
+            />
+            <TouchableOpacity onPress={() => this.addNewTodo()}>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>Add new TodoList</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={close}>
+              <Text>Close modal</Text>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </Modal>
     );
   }
 }
@@ -59,13 +74,38 @@ const createTodoListMutation = gql`
         id
         createdAt
         modifiedAt
-        author
-        title
+        createdBy {
+          id
+          username
+        }
+        members {
+          edges {
+            cursor
+          }
+        }
       }
     }
   }
 `;
 
-export default graphql(createTodoListMutation, {
-  name: 'createTodoList',
-})(TodoListAdder);
+// const AddToMembershipConnection = gql`
+//   mutation AddToMembershipConnection($conn: AddToMembershipConnectionInput!) {
+//     addToMembershipConnection(input: $conn) {
+//   		changedMembership {
+//         todoList {
+//           title
+//           members {
+//             edges {
+//               cursor
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+
+// graphql(AddToMembershipConnection, { name: 'addTodoMembership' })
+
+export default graphql(createTodoListMutation,
+  { name: 'createTodoList' })(TodoListAdder);
