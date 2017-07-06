@@ -15,56 +15,74 @@ import connect from '../../connect';
 
 class TodoScreen extends Component {
 
-  handleUpdate = async(input, errorHandler = ()=>{}) => {
+  handleDone = async() => {
     const { updateTodo } = this.props;
+    const { node } = this.props.navigation.state.params;
     try {
       await updateTodo({
         variables: {
-          input
+          input:{
+            id: node.id,
+            done: !node.done
+          }
         }
       });
     } catch(error) {
       console.log('error', error);
-      errorHandler();
     }
   };
 
-  voteAction = (voted) => {
-    let votes = [];
-    if (voted) {
-      votes = this.state.votes.filter(
-        (val) => (val !== this.props.store.user.id));
-    }else{
-      votes = this.state.votes.concat([this.props.store.user.id]);
+  addVoteHandler = async() => {
+    const {addVote, store} = this.props;
+    const { node } = this.props.navigation.state.params;
+    try{
+      const {data} = await addVote({
+        variables: {
+          input:{
+            userId:store.user.id,
+            todoId:node.id,
+            todolistId:node.list.id,
+          }
+        }
+      });
+      this.setState({
+        vote: data.createVote,
+      });
+    }catch(error){
+      console.log('error', error);
     }
-    this.setState({
-      votes: votes
-    });
-    this.handleUpdate(
-      {
-        id: this.props.navigation.state.params.node.id,
-        votes
-      },
-      ()=>{
-        this.setState({
-          votes: this.state.votes,
-        });
-      }
-    );
+  };
+
+  deleteVoteHandler = async() => {
+    const {deleteVote} = this.props;
+    try{
+      await deleteVote({
+        variables: {
+          input:{
+            id: this.state.vote.node.id,
+          }
+        }
+      });
+      this.setState({
+        vote:null,
+      });
+    }catch(error){
+      console.log('error', error);
+    }
   };
 
   constructor(props) {
     super(props);
     const { node } = props.navigation.state.params;
     this.state = {
-      votes: node.votes
-    }
+      vote: node.usersVote.edges[0]
+    };
   }
 
 
   render(){
     const { node } = this.props.navigation.state.params;
-    const voted = this.state.votes.indexOf(this.props.store.user.id) !== -1
+    const voted = !!(this.state.vote);
     const buttonStyle = StyleSheet.flatten([styles.votingButton,voted ? styles.voted: styles.notVoted]);
     return (
       <ScrollView style={styles.container}>
@@ -87,16 +105,7 @@ class TodoScreen extends Component {
               <View style={styles.checkboxContainer}>
                 <Text style={{marginRight:10}}>Done:</Text>
                 <CheckBox
-                  onPress={
-                    () => {
-                      this.handleUpdate(
-                        {
-                          id: node.id,
-                          done: !node.done
-                        }
-                      )
-                    }
-                  }
+                  onPress={this.handleDone}
                   checked={node.done}
                   color="#e26e64"
                   borderColor="#e26e64"
@@ -104,9 +113,7 @@ class TodoScreen extends Component {
               </View>
               <TouchableOpacity
                 style={buttonStyle}
-                onPress={()=>{
-                  this.voteAction(voted);
-                }}
+                onPress={voted ? this.deleteVoteHandler : this.addVoteHandler}
               >
                 <Icon
                   name={voted ? "arrow-down" : "arrow-up"}
@@ -139,4 +146,29 @@ const updateTodoMutation = gql`
   }
 `;
 
-export default connect(graphql(updateTodoMutation, { name: 'updateTodo' })(TodoScreen));
+const addVote = gql`
+  mutation CreateVote($input: CreateVoteInput!) {
+    createVote(input:$input) {
+      node:changedVote {
+        id
+        user{
+          id
+        }
+      }
+    }
+  }
+`;
+
+const deleteVote = gql`
+  mutation DeleteVote($input: DeleteVoteInput!) {
+    deleteVote(input:$input){
+      clientMutationId
+    }
+  }
+`;
+
+export default connect(compose(
+  graphql(updateTodoMutation, { name: 'updateTodo' }),
+  graphql(addVote, { name: 'addVote' }),
+  graphql(deleteVote, { name: 'deleteVote' }),
+)(TodoScreen));

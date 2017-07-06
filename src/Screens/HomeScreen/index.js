@@ -26,10 +26,7 @@ class Home extends Component {
       const listIds = (todoLists.concat(createdLists)).map((edge) => {
         return (edge.node.id);
       });
-      if(this.unsubscribeHandler) {
-        this.unsubscribeHandler();
-      }
-      this.unsubscribeHandler = this.props.getLists.subscribeToMore({
+      this.props.getLists.subscribeToMore({
         document: todoListSubscription,
         variables: {
           filter: {
@@ -49,7 +46,7 @@ class Home extends Component {
           let createdLists = prev.getUser.createdLists.edges;
           const todoList = subscriptionData.data.subscribeToTodoList.edge;
           if (event === 'deleteTodoList') {
-            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.node.id))
+            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.node.id));
             createdLists = createdLists.filter((edge) => (edge.node.id !== todoList.node.id))
           } else if (event === 'updateTodoList') {
             const mapFunction = (edge) => {
@@ -104,15 +101,15 @@ class Home extends Component {
 
   handleListCardPress = (item) => {
     this.props.navigation.navigate('List', item);
-  }
+  };
 
   handleAddListPress = () => {
     this.setState({ showListAdder: true });
-  }
+  };
 
   handleCloseListAdder = () => {
     this.setState({ showListAdder: false });
-  }
+  };
 
   render() {
     const { loading, error, getUser } = this.props.getLists;

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 
@@ -25,7 +24,7 @@ class TodoCard extends Component {
     this.setState({ mutating: true });
 
     try {
-      const { data } = await updateTodo({
+      await updateTodo({
         variables: {
           input: {
             id: this.props.data.id,
@@ -70,7 +69,7 @@ class TodoCard extends Component {
                 color="#e26e64"
               />
             </View>
-            <Text>{`votes:\t${data.votes.length}`}</Text>
+            <Text>{`votes:\t${data.votes.aggregations.count}`}</Text>
           </View>
         </View>
       </TouchableOpacity>

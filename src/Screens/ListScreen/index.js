@@ -16,51 +16,61 @@ class ListScreen extends Component {
 
   componentDidUpdate() {
     if(!this.props.getList.loading) {
-      if(this.unsubscribeHandler) {
-        this.unsubscribeHandler();
-      }
-      this.unsubscribeHandler = this.props.getList.subscribeToMore({
-        document:todosSubscription,
-        variables:{
-          filter:{
-            listId:{
+      this.props.getList.subscribeToMore({
+        document: todosSubscription,
+        variables: {
+          filter: {
+            listId: {
               eq: this.props.navigation.state.params.node.id
             }
           },
           id: this.props.store.user.id,
         },
-        updateQuery: (prev, { subscriptionData }) => {
-
-          if (!subscriptionData) {
-            return prev;
-          }
-
-          let edges = prev.getTodoList.todos.edges;
-          const todoEdge = subscriptionData.data.subscribeToTodo.edge;
-          const event = subscriptionData.data.subscribeToTodo.mutation;
-          if (event === 'createTodo') {
-            edges = edges.concat(todoEdge);
-          }else if (event == 'deleteTodo') {
-            edges = edges.filter((edge) => (edge.node.id !== todoEdge.node.id));
-          }else {
-            edges = edges.map((edge) => {
-              if (edge.node.id === todoEdge.node.id) {
-                return todoEdge;
-              }
-              return edge;
-            })
-          }
-          return {
-            ...prev,
-            getTodoList:{
-              todos:{
-                edges:edges
-              }
-            }
-          }
-        }
+        updateQuery: this.updateData,
       });
+      this.props.getList.subscribeToMore({
+        document: voteSubscription,
+        variables: {
+          filter: {
+            todolistId: {
+              eq: this.props.navigation.state.params.node.id
+            }
+          },
+          id: this.props.store.user.id,
+        },
+        updateQuery: this.updateData,
+      });
+
     }
+  }
+
+  updateData(prev,{subscriptionData}) {
+    if (!subscriptionData) {
+      return prev;
+    }
+    let edges = prev.getTodoList.todos.edges;
+    const todoEdge = subscriptionData.data.payload.edge;
+    const event = subscriptionData.data.payload.mutation;
+    if (event === 'createTodo') {
+      edges = edges.concat(todoEdge);
+    }else if (event === 'deleteTodo') {
+      edges = edges.filter((edge) => (edge.node.id !== todoEdge.node.id));
+    }else {
+      edges = edges.map((edge) => {
+        if (edge.node.id === todoEdge.node.id) {
+          return todoEdge;
+        }
+        return edge;
+      })
+    }
+    return {
+      ...prev,
+      getTodoList:{
+        todos:{
+          edges:edges
+        }
+      }
+    };
   }
 
   renderItem = ({item}) => {
@@ -70,11 +80,10 @@ class ListScreen extends Component {
         onPress={()=>{this.props.navigation.navigate('Todo',item)}}
       />
     );
-  }
+  };
 
   render() {
     const { loading, error, getTodoList } = this.props.getList;
-    console.log('getLists',this.props.getList);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -94,7 +103,7 @@ class ListScreen extends Component {
       <FlatList
         style={styles.listContainer}
         refreshing={loading}
-        data={_.orderBy(getTodoList.todos.edges,['node.votes.length'],['desc'])}
+        data={_.orderBy(getTodoList.todos.edges,['node.votes.aggregations.count'],['desc'])}
         keyExtractor={(item) => item.node.id}
         renderItem={this.renderItem}
         ListEmptyComponent={
@@ -109,20 +118,36 @@ class ListScreen extends Component {
 
 const fragments = {
   todoFragment: gql`
-    fragment TodoInfo on Todo {
-      id
-      done
-      title
-      text
-      createdAt
-      modifiedAt
-      votes
-      author {
-        username
+  fragment TodoInfo on Todo {
+    id
+    done
+    title
+    text
+    createdAt
+    modifiedAt
+    votes {
+      aggregations {
+        count
       }
     }
-  `
-}
+    usersVote: votes {
+      edges{
+        node{
+          id
+          user{
+            id
+          }
+        }
+      }
+    }
+    author {
+      username
+    }
+    list{
+      id
+    }
+  }`
+};
 
 const getTodoListQuery = gql`
 query GetListTodos($listId: ID!) {
@@ -144,10 +169,24 @@ ${fragments.todoFragment}
 
 const todosSubscription = gql`
 subscription subscribeToTodos($filter: TodoSubscriptionFilter) {
-  subscribeToTodo(filter:$filter, mutations:[createTodo,updateTodo,deleteTodo]){
+  payload:subscribeToTodo(filter:$filter, mutations:[createTodo,updateTodo,deleteTodo]){
     mutation
     edge {
       node {
+        ...TodoInfo
+      }
+    }
+  }
+}
+${fragments.todoFragment}
+`;
+
+const voteSubscription = gql`
+subscription subscribeToVotes($filter: VoteSubscriptionFilter) {
+  payload:subscribeToVote(filter:$filter, mutations:[createVote,deleteVote]){
+    mutation
+    edge:value{
+      node:todo {
         ...TodoInfo
       }
     }
