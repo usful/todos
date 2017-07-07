@@ -7,12 +7,20 @@ import {
   SubscriptionClient,
   addGraphQLSubscriptions,
 } from 'subscriptions-transport-ws';
-import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen, ListScreen, MembersScreen } from './Screens';
+import {
+  LoginScreen,
+  HomeScreen,
+  RegisterScreen,
+  SplashScreen,
+  ListScreen,
+  MembersScreen,
+  TodoScreen,
+} from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
 const wsClient = new SubscriptionClient(scapholdWebSocketUrl, {
-  reconnect:true,
+  reconnect: true,
 });
 
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
@@ -31,30 +39,39 @@ const genAuthMiddleWare = app => {
         req.options.headers = {};
       }
       if (app.props.store.user.isAuthenticated) {
-        req.options.headers['authorization'] = `Bearer ${app.props.store.user.token}`;
+        req.options.headers[
+          'authorization'
+        ] = `Bearer ${app.props.store.user.token}`;
       }
       next();
     },
   };
 };
 
-const AuthNavigator = StackNavigator({
-  Splash: { screen: SplashScreen },
-  Login: { screen: LoginScreen },
-  Register: { screen: RegisterScreen },
-}, {
-   headerMode: 'none',
-   initialRouteName: 'Splash',
-});
+const AuthNavigator = StackNavigator(
+  {
+    Splash: { screen: SplashScreen },
+    Login: { screen: LoginScreen },
+    Register: { screen: RegisterScreen },
+  },
+  {
+    headerMode: 'none',
+    initialRouteName: 'Splash',
+  },
+);
 
-const HomeNavigator = StackNavigator({
-  Home: { screen: HomeScreen },
-  List: { screen: ListScreen },
-  Members: { screen: MembersScreen },
-  }, {
+const HomeNavigator = StackNavigator(
+  {
+    Home: { screen: HomeScreen },
+    List: { screen: ListScreen },
+    Members: { screen: MembersScreen },
+    Todo: { screen: TodoScreen },
+  },
+  {
     headerMode: 'none',
     initialRouteName: 'Home',
-  });
+  },
+);
 
 const Navigator = StackNavigator(
   {

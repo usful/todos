@@ -5,3 +5,4 @@ export { default as RegisterScreen } from './RegisterScreen';
 export { default as SplashScreen } from './SplashScreen';
 export { default as ListScreen } from './ListScreen';
 export { default as MembersScreen } from './MembersScreen';
+export { default as TodoScreen } from './TodoScreen';

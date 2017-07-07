@@ -1,34 +1,30 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
-import Spinner from 'react-native-spinkit';
+import { graphql } from 'react-apollo';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 
 import styles from './styles';
 import { Button, CheckBox } from '../index';
-import connect from '../../connect';
 
 class TodoCard extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       mutating: false,
     };
   }
 
   handleToggleDonePress = async() => {
-    const { updateTodo, refetch } = this.props;
+    const { updateTodo } = this.props;
 
     this.setState({ mutating: true });
 
     try {
-      const { data } = await updateTodo({
+      await updateTodo({
         variables: {
           input: {
             id: this.props.data.id,
@@ -36,8 +32,6 @@ class TodoCard extends Component {
           }
         }
       });
-      console.log('res data', data);
-      refetch();
     } catch(error) {
       console.log('error', error);
       this.setState({ mutating: false });
@@ -45,11 +39,16 @@ class TodoCard extends Component {
   }
 
   render() {
-    const { data, owner, onPress } = this.props;
+    const { data, onPress } = this.props;
 
     return (
       <TouchableOpacity onPress={onPress}>
-        <View style={styles.card}>
+        <View
+          style={styles.card}
+          shadowOffset={{width:5,height:5}}
+          shadowOpacity={0.2}
+          shadowColor={'black'}
+        >
 
           <View style={styles.cardPreview}>
             <View style={styles.titleContainer}>
@@ -60,11 +59,17 @@ class TodoCard extends Component {
             </View>
           </View>
 
-          <View style={styles.cardButtons}>
-            <CheckBox
-              checked={data.done}
-              onPress={this.handleToggleDonePress}
-            />
+          <View style={styles.cardActions}>
+            <View style={styles.cardCheckbox}>
+              <Text style={{marginRight:20}}>Done:</Text>
+              <CheckBox
+                checked={data.done}
+                onPress={this.handleToggleDonePress}
+                borderColor="#e26e64"
+                color="#e26e64"
+              />
+            </View>
+            <Text>{`votes:\t${data.votes.aggregations.count}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -78,7 +83,6 @@ const updateTodoMutation = gql`
       changedTodo {
         id
         title
-        votes
       }
     }
   }

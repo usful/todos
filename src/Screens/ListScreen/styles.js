@@ -17,4 +17,8 @@ export default StyleSheet.create({
     fontSize: 24,
     color: '#999',
   },
+  listContainer:{
+    backgroundColor:'#e26e64',
+    paddingTop:20,
+  }
 });
