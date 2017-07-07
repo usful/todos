@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Image, View, Text, TextInput } from 'react-native';
+import { Image, View, Text, TextInput as TI } from 'react-native';
 import styles from './styles';
 
-export default class FormTextInput extends Component {
+export default class TextInput extends Component {
 
   render() {
     return (
-      <TextInput
+      <TI
         selectionColor={'white'}
         underlineColorAndroid={'white'}
         placeholderTextColor={'white'}

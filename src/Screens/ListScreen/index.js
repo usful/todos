@@ -4,7 +4,7 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -14,16 +14,15 @@ import { TodoCard, Button } from '../../Components';
 import connect from '../../connect';
 
 class ListScreen extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      showTodoAdder: false,
-    }
+      showTodoAdder: false
+    };
   }
 
   componentDidUpdate() {
-    if(!this.props.getList.loading) {
+    if (!this.props.getList.loading) {
       this.props.getList.subscribeToMore({
         document: todosSubscription,
         variables: {
@@ -32,9 +31,9 @@ class ListScreen extends Component {
               eq: this.props.navigation.state.params.node.id
             }
           },
-          id: this.props.store.user.id,
+          id: this.props.store.user.id
         },
-        updateQuery: this.updateData,
+        updateQuery: this.updateData
       });
       this.props.getList.subscribeToMore({
         document: voteSubscription,
@@ -44,15 +43,14 @@ class ListScreen extends Component {
               eq: this.props.navigation.state.params.node.id
             }
           },
-          id: this.props.store.user.id,
+          id: this.props.store.user.id
         },
-        updateQuery: this.updateData,
+        updateQuery: this.updateData
       });
-
     }
   }
 
-  updateData(prev,{subscriptionData}) {
+  updateData(prev, { subscriptionData }) {
     if (!subscriptionData) {
       return prev;
     }
@@ -61,31 +59,40 @@ class ListScreen extends Component {
     const event = subscriptionData.data.payload.mutation;
     if (event === 'createTodo') {
       edges = edges.concat(todoEdge);
-    }else if (event === 'deleteTodo') {
-      edges = edges.filter((edge) => (edge.node.id !== todoEdge.node.id));
-    }else {
-      edges = edges.map((edge) => {
+    } else if (event === 'deleteTodo') {
+      edges = edges.filter(edge => edge.node.id !== todoEdge.node.id);
+    } else {
+      edges = edges.map(edge => {
         if (edge.node.id === todoEdge.node.id) {
           return todoEdge;
         }
         return edge;
-      })
+      });
     }
     return {
       ...prev,
-      getTodoList:{
-        todos:{
-          edges:edges
+      getTodoList: {
+        todos: {
+          edges: edges
         }
       }
     };
   }
 
-  renderItem = ({item}) => {
+  renderItem = ({ item }) => {
+    const todo = {
+      ...item.node,
+      votes: item.node.votes.aggregations.count,
+      vote: item.node.usersVote.edges[0],
+      voted: !!item.node.usersVote.edges[0]
+    };
+
     return (
       <TodoCard
-        data={item.node}
-        onPress={()=>{this.props.navigation.navigate('Todo',item)}}
+        todo={todo}
+        onPress={() => {
+          this.props.navigation.navigate('Todo', { todo });
+        }}
       />
     );
   };
@@ -103,21 +110,29 @@ class ListScreen extends Component {
     if (error) {
       return (
         <View>
-          <Text>Error: {error.message}</Text>
+          <Text>
+            Error: {error.message}
+          </Text>
         </View>
-      )
+      );
     }
     return (
       <View style={styles.container}>
         <Button
           text="Add Todo"
-          onPress={() => {this.setState({ showTodoAdder: !this.state.showTodoAdder})}}
+          onPress={() => {
+            this.setState({ showTodoAdder: !this.state.showTodoAdder });
+          }}
         />
         <FlatList
           style={styles.listContainer}
           refreshing={loading}
-          data={_.orderBy(getTodoList.todos.edges,['node.votes.aggregations.count'],['desc'])}
-          keyExtractor={(item) => item.node.id}
+          data={_.orderBy(
+            getTodoList.todos.edges,
+            ['node.votes.aggregations.count'],
+            ['desc']
+          )}
+          keyExtractor={item => item.node.id}
           renderItem={this.renderItem}
           ListEmptyComponent={
             <View style={styles.emptyList}>
@@ -132,35 +147,36 @@ class ListScreen extends Component {
 
 const fragments = {
   todoFragment: gql`
-  fragment TodoInfo on Todo {
-    id
-    done
-    title
-    text
-    createdAt
-    modifiedAt
-    votes {
-      aggregations {
-        count
+    fragment TodoInfo on Todo {
+      id
+      done
+      title
+      text
+      createdAt
+      modifiedAt
+      votes {
+        aggregations {
+          count
+        }
       }
-    }
-    usersVote: votes {
-      edges{
-        node{
-          id
-          user{
+      usersVote: votes {
+        edges {
+          node {
             id
+            user {
+              id
+            }
           }
         }
       }
+      author {
+        username
+      }
+      list {
+        id
+      }
     }
-    author {
-      username
-    }
-    list{
-      id
-    }
-  }`
+  `
 };
 
 const getTodoListQuery = gql`
@@ -209,12 +225,14 @@ subscription subscribeToVotes($filter: VoteSubscriptionFilter) {
 ${fragments.todoFragment}
 `;
 
-export default connect(graphql(getTodoListQuery, {
+export default connect(
+  graphql(getTodoListQuery, {
     name: 'getList',
     options: props => ({
       variables: {
         listId: props.navigation.state.params.node.id,
         id: props.store.user.id
-      },
-    }),
-  })(ListScreen));
+      }
+    })
+  })(ListScreen)
+);

@@ -5,3 +5,4 @@ export { default as Button } from './Button';
 export { default as Link } from './Link';
 export { default as TodoCard } from './TodoCard';
 export { default as CheckBox } from './CheckBox';
+export { default as VoteCount } from './VoteCount';

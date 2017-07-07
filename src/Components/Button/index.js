@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
 import styles from './styles';
+import chroma from 'chroma-js';
 
 export default class Button extends Component {
   static defaultProps = {
@@ -8,39 +9,46 @@ export default class Button extends Component {
     loading: false,
     onPress: () => {},
     text: 'Submit',
+    color: '#e26e64',
+    inverted: false
   };
 
-  render() {
-    const {
-      backgroundColor,
-      borderColor,
-      borderWidth,
-      fontSize,
-      fontColor,
-      width,
-      height
-    } = this.props;
-    const passedStyles = {
-      containerStyle: {
-        backgroundColor,
-        borderColor,
-        borderWidth,
-        width,
-        height,
+  get containerStyle() {
+    return [styles.container, this.props.inverted ? {
+      borderWidth: 1,
+      borderColor: this.props.color,
+      backgroundColor: 'transparent'
+    } : {
+      borderWidth: 0,
+      backgroundColor: this.props.color
+    }];
+  }
+
+  get textStyle() {
+    return [
+      styles.text, this.props.inverted ? {
+        color: this.props.color
+      } : {
+        color: chroma(this.props.color).luminance() < 0.4 ? 'white' : 'black'
       },
-      textStyle: {
-        fontSize,
-        color:fontColor
+      {
+        paddingLeft: !!this.props.children ? 10 : 0
       }
-    }
+    ]
+  }
+
+  render() {
     return (
       <TouchableOpacity
         disabled={this.props.disabled || this.props.loading}
         onPress={this.props.onPress}
-        style={[styles.container, passedStyles.containerStyle]}
+        style={this.containerStyle}
       >
-        {this.props.loading ? <ActivityIndicator animating/> : null}
-        <Text style={[styles.text, passedStyles.textStyle]}>{this.props.text}</Text>
+        {this.props.loading ? <ActivityIndicator animating /> : null}
+        {this.props.children}
+        <Text style={this.textStyle}>
+          {this.props.text}
+        </Text>
       </TouchableOpacity>
     );
   }
