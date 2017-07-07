@@ -52,7 +52,7 @@ class TodoListCard extends Component {
   }
 
   render() {
-    const { data, owner, onPress } = this.props;
+    const { data, owner, onPress, handleMembersClick } = this.props;
 
     const dateString = Moment(data.createdAt).calendar();
 
@@ -60,12 +60,16 @@ class TodoListCard extends Component {
       <TouchableOpacity onPress={onPress}>
         <View style={styles.card}>
           <View style={styles.cardContent}>
-            <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
-              <Button
-                onPress={() => this.state.mutating ? null : this.handleDelete()}
-                loading={this.state.mutating}
-                text={owner ? 'delete' : 'remove'}
-              />
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>
+                {data.title}
+              </Text>
+            </View>
+            <Button
+              onPress={() => this.state.mutating ? null : this.handleDelete()}
+              loading={this.state.mutating}
+              text={owner ? 'delete' : 'remove'}
+            />
           </View>
           <View style={styles.cardContent}>
             <Text>
@@ -74,6 +78,10 @@ class TodoListCard extends Component {
               {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
               {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
             </Text>
+            <Button
+              onPress={() => handleMembersClick()}
+              text="members"
+            />
           </View>
         </View>
       </TouchableOpacity>

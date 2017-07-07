@@ -95,9 +95,14 @@ class Home extends Component {
         owner={item.node.createdBy.id === this.props.store.user.id}
         userId={this.props.store.user.id}
         onPress={() => this.handleListCardPress(item)}
+        handleMembersClick={() => this.handleMembersClick(item)}
       />
     );
   };
+
+  handleMembersClick = (item) => {
+    this.props.navigation.navigate('Members', item);
+  }
 
   handleListCardPress = (item) => {
     this.props.navigation.navigate('List', item);
@@ -113,7 +118,7 @@ class Home extends Component {
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
-    console.log('todoLists', this.props);
+    console.log('todoLists', this.props.getLists.getUser);
     if (loading) {
       return (
         <View style={styles.container}>

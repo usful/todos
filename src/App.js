@@ -7,7 +7,7 @@ import {
   SubscriptionClient,
   addGraphQLSubscriptions,
 } from 'subscriptions-transport-ws';
-import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen, ListScreen } from './Screens';
+import { LoginScreen, HomeScreen, RegisterScreen, SplashScreen, ListScreen, MembersScreen } from './Screens';
 import { scapholdUrl, scapholdWebSocketUrl } from './config';
 import connect from './connect';
 
@@ -50,6 +50,7 @@ const AuthNavigator = StackNavigator({
 const HomeNavigator = StackNavigator({
   Home: { screen: HomeScreen },
   List: { screen: ListScreen },
+  Members: { screen: MembersScreen },
   }, {
     headerMode: 'none',
     initialRouteName: 'Home',
