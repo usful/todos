@@ -3,16 +3,24 @@ import {
   ActivityIndicator,
   FlatList,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import _ from 'lodash';
 import styles from './styles';
-import { TodoCard } from '../../Components';
+import { TodoCard, Button } from '../../Components';
 import connect from '../../connect';
 
 class ListScreen extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      showTodoAdder: false,
+    }
+  }
 
   componentDidUpdate() {
     if(!this.props.getList.loading) {
@@ -100,18 +108,24 @@ class ListScreen extends Component {
       )
     }
     return (
-      <FlatList
-        style={styles.listContainer}
-        refreshing={loading}
-        data={_.orderBy(getTodoList.todos.edges,['node.votes.aggregations.count'],['desc'])}
-        keyExtractor={(item) => item.node.id}
-        renderItem={this.renderItem}
-        ListEmptyComponent={
-          <View style={styles.emptyList}>
-            <Text style={styles.emptyListText}>No Todos</Text>
-          </View>
-        }
-      />
+      <View style={styles.container}>
+        <Button
+          text="Add Todo"
+          onPress={() => {this.setState({ showTodoAdder: !this.state.showTodoAdder})}}
+        />
+        <FlatList
+          style={styles.listContainer}
+          refreshing={loading}
+          data={_.orderBy(getTodoList.todos.edges,['node.votes.aggregations.count'],['desc'])}
+          keyExtractor={(item) => item.node.id}
+          renderItem={this.renderItem}
+          ListEmptyComponent={
+            <View style={styles.emptyList}>
+              <Text style={styles.emptyListText}>No Todos</Text>
+            </View>
+          }
+        />
+      </View>
     );
   }
 }

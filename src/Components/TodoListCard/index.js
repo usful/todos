@@ -68,6 +68,8 @@ class TodoListCard extends Component {
               <Button
                 onPress={() => this.state.mutating ? null : this.handleDelete()}
                 loading={this.state.mutating}
+                borderWidth={1}
+                borderColor="red"
                 text={owner ? 'delete' : 'remove'}
               />
           </View>

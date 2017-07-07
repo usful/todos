@@ -23,6 +23,7 @@ export default StyleSheet.create({
   },
   buttons: {
     paddingTop: 30,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   }
 });

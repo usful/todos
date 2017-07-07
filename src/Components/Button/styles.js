@@ -7,10 +7,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 30,
     paddingVertical: 10,
-    minWidth: 50,
-    minHeight: 40,
-  },
-  touchable: {
     backgroundColor: 'white',
     borderRadius: 6
   },

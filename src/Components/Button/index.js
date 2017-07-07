@@ -7,20 +7,40 @@ export default class Button extends Component {
     disabled: false,
     loading: false,
     onPress: () => {},
-    text: 'Submit'
+    text: 'Submit',
   };
 
   render() {
+    const {
+      backgroundColor,
+      borderColor,
+      borderWidth,
+      fontSize,
+      fontColor,
+      width,
+      height
+    } = this.props;
+    const passedStyles = {
+      containerStyle: {
+        backgroundColor,
+        borderColor,
+        borderWidth,
+        width,
+        height,
+      },
+      textStyle: {
+        fontSize,
+        color:fontColor
+      }
+    }
     return (
       <TouchableOpacity
         disabled={this.props.disabled || this.props.loading}
         onPress={this.props.onPress}
-        style={styles.touchable}
+        style={[styles.container, passedStyles.containerStyle]}
       >
-        <View style={styles.container}>
-          {this.props.loading ? <ActivityIndicator animating/> : null}
-          <Text style={styles.text}>{this.props.text}</Text>
-        </View>
+        {this.props.loading ? <ActivityIndicator animating/> : null}
+        <Text style={[styles.text, passedStyles.textStyle]}>{this.props.text}</Text>
       </TouchableOpacity>
     );
   }
