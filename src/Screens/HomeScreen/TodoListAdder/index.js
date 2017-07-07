@@ -25,7 +25,6 @@ class TodoListAdder extends Component {
           },
         },
       });
-      console.log(result);
     } catch (error) {
       console.error(error);
     }

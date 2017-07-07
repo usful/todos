@@ -46,7 +46,7 @@ class Home extends Component {
           let createdLists = prev.getUser.createdLists.edges;
           const todoList = subscriptionData.data.subscribeToTodoList.edge;
           if (event === 'deleteTodoList') {
-            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.node.id))
+            todoLists = todoLists.filter((edge) => (edge.node.id !== todoList.node.id));
             createdLists = createdLists.filter((edge) => (edge.node.id !== todoList.node.id))
           } else if (event === 'updateTodoList') {
             const mapFunction = (edge) => {
@@ -101,19 +101,18 @@ class Home extends Component {
 
   handleListCardPress = (item) => {
     this.props.navigation.navigate('List', item);
-  }
+  };
 
   handleAddListPress = () => {
     this.setState({ showListAdder: true });
-  }
+  };
 
   handleCloseListAdder = () => {
     this.setState({ showListAdder: false });
-  }
+  };
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
-    console.log('todoLists', this.props);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -148,6 +147,7 @@ class Home extends Component {
           userId={this.props.store.user.id}
         />
         <FlatList
+          style={styles.listContainer}
           refreshing={loading}
           data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
           keyExtractor={(item) => item.node.id}
@@ -190,7 +190,7 @@ const fragments = {
       }
     }
   `
-}
+};
 
 const getTodoListsQuery = gql`
 query getUserTodoLists($id: ID!) {
@@ -214,7 +214,7 @@ query getUserTodoLists($id: ID!) {
 ${fragments.todoList}`;
 
 const todoListSubscription = gql`
-subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
+subscription ($filter: TodoListSubscriptionFilter) {
  subscribeToTodoList(filter:$filter, mutations:[deleteTodoList,updateTodoList]) {
   edge {
     node {
@@ -224,7 +224,7 @@ subscription todoListDeletion($filter: TodoListSubscriptionFilter) {
   mutation
  }
 }
-${fragments.todoList}`
+${fragments.todoList}`;
 
 export default connect(
   graphql(getTodoListsQuery, {

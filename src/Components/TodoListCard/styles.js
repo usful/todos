@@ -18,7 +18,8 @@ export default StyleSheet.create({
   },
   card: {
     backgroundColor: "white",
-    margin: 6,
+    margin: 15,
+    marginBottom:0,
     padding:10,
   }
 });

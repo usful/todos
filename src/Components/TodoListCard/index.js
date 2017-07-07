@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
-import Spinner from 'react-native-spinkit';
 import Moment from 'moment';
 import {
   View,
@@ -58,7 +57,12 @@ class TodoListCard extends Component {
 
     return (
       <TouchableOpacity onPress={onPress}>
-        <View style={styles.card}>
+        <View
+          style={styles.card}
+          shadowOffset={{width:5,height:5}}
+          shadowOpacity={0.2}
+          shadowColor={'black'}
+        >
           <View style={styles.cardContent}>
             <View style={styles.titleContainer}><Text style={styles.title}>{data.title}</Text></View>
               <Button
