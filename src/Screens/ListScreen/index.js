@@ -16,6 +16,7 @@ import connect from "../../connect";
 class ListScreen extends Component {
   constructor(props) {
     super(props);
+    this.subscribed = false;
     this.state = {
       showTodoAdder: false
     };
@@ -23,30 +24,33 @@ class ListScreen extends Component {
 
   componentDidUpdate() {
     if (!this.props.getList.loading) {
-      this.props.getList.subscribeToMore({
-        document: todosSubscription,
-        variables: {
-          filter: {
-            listId: {
-              eq: this.props.navigation.state.params.node.id
-            }
+      if(!this.subscribed) {
+        this.props.getList.subscribeToMore({
+          document: todosSubscription,
+          variables: {
+            filter: {
+              listId: {
+                eq: this.props.navigation.state.params.node.id
+              }
+            },
+            id: this.props.store.user.id
           },
-          id: this.props.store.user.id
-        },
-        updateQuery: this.updateData
-      });
-      this.props.getList.subscribeToMore({
-        document: voteSubscription,
-        variables: {
-          filter: {
-            todolistId: {
-              eq: this.props.navigation.state.params.node.id
-            }
+          updateQuery: this.updateData
+        });
+        this.props.getList.subscribeToMore({
+          document: voteSubscription,
+          variables: {
+            filter: {
+              todolistId: {
+                eq: this.props.navigation.state.params.node.id
+              }
+            },
+            id: this.props.store.user.id
           },
-          id: this.props.store.user.id
-        },
-        updateQuery: this.updateData
-      });
+          updateQuery: this.updateData
+        });
+        this.subscribed = true;
+      }
     }
   }
 
@@ -83,8 +87,6 @@ class ListScreen extends Component {
     const todo = {
       ...item.node,
       votes: item.node.votes.aggregations.count,
-      vote: item.node.usersVote.edges[0],
-      voted: !!item.node.usersVote.edges[0]
     };
 
     return (
@@ -152,29 +154,13 @@ const fragments = {
       id
       done
       title
-      text
-      createdAt
-      modifiedAt
       votes {
         aggregations {
           count
         }
       }
-      usersVote: votes {
-        edges {
-          node {
-            id
-            user {
-              id
-            }
-          }
-        }
-      }
       author {
         username
-      }
-      list {
-        id
       }
     }
   `
@@ -192,7 +178,6 @@ query GetListTodos($listId: ID!) {
     }
     id
     title
-    createdAt
   }
 }
 ${fragments.todoFragment}
