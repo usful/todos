@@ -22,7 +22,6 @@ class TodoScreen extends Component {
 
   componentDidUpdate() {
     if (!this.props.getTodo.loading) {
-      console.log(this.props.getTodo);
       if (!this.subscribed) {
         this.props.getTodo.subscribeToMore({
           document: todoSubscription,
@@ -30,6 +29,11 @@ class TodoScreen extends Component {
             filter: {
               id: {
                 eq: this.props.navigation.state.params.todoId
+              }
+            },
+            where: {
+              userId:{
+                eq: this.props.store.user.id,
               }
             }
           },
@@ -42,6 +46,11 @@ class TodoScreen extends Component {
             filter: {
               todoId: {
                 eq: this.todo.id
+              }
+            },
+            where: {
+              userId:{
+                eq: this.props.store.user.id,
               }
             }
           },
@@ -122,7 +131,7 @@ class TodoScreen extends Component {
           shadowOpacity={0.2}
           shadowColor={"black"}
         >
-          <TodoCard todo={this.todo} />
+          <TodoCard todo={this.todo}/>
           <View style={styles.seperator} />
           <View style={styles.body}>
             <Text style={styles.bodyText}>
@@ -136,7 +145,7 @@ class TodoScreen extends Component {
               inverted={!this.todo.voted}
             >
               <Icon
-                name={this.todo.voted ? "arrow-up" : "arrow-down"}
+                name={this.todo.voted ? "arrow-down" : "arrow-up"}
                 color={!this.todo.voted ? "#e26e64" : "white"}
                 size={20}
               />
@@ -182,7 +191,7 @@ const todoFragment = gql`
         count
       }
     }
-    usersVote: votes {
+    usersVote: votes(where: $where) {
       edges {
         node {
           id
@@ -202,7 +211,7 @@ const todoFragment = gql`
 `;
 //Think later about people deleting todos and how to react to that
 const todoSubscription = gql`
-  subscription todoUpdates($filter: TodoSubscriptionFilter) {
+  subscription todoUpdates($filter: TodoSubscriptionFilter, $where: VoteWhereArgs) {
     payload:subscribeToTodo(filter:$filter, mutations:[updateTodo]) {
       edge {
         node {
@@ -215,7 +224,7 @@ const todoSubscription = gql`
 `;
 
 const voteSubscription = gql`
-subscription subscribeToVotes($filter: VoteSubscriptionFilter) {
+subscription subscribeToVotes($filter: VoteSubscriptionFilter, $where: VoteWhereArgs) {
   payload:subscribeToVote(filter:$filter, mutations:[createVote,deleteVote]){
     edge:value{
       node:todo {
@@ -228,7 +237,7 @@ ${todoFragment}
 `;
 
 const getTodoListQuery = gql`
-query GetListTodos($todoId: ID!) {
+query GetListTodos($todoId: ID!, $where: VoteWhereArgs) {
   todo:getTodo(id: $todoId) {
     ...TodoInfo
   }
@@ -245,7 +254,12 @@ export default connect(
       options: props => {
         return {
           variables: {
-            todoId: props.navigation.state.params.todoId
+            todoId: props.navigation.state.params.todoId,
+            where: {
+              userId:{
+                eq: props.store.user.id,
+              }
+            }
           }
         };
       }
