@@ -1,23 +1,24 @@
-import React, { Component } from 'react';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { Component } from "react";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import { View, Text, TouchableOpacity } from "react-native";
 
-import styles from './styles';
-import { VoteCount, CheckBox } from '../index';
+import styles from "./styles";
+import { VoteCount, CheckBox } from "../index";
 
 class TodoCard extends Component {
   static defaultProps = {
     onPress: () => {},
     todo: {
-      id: '',
-      title: '',
+      id: "",
+      title: "",
       author: {
-        username: ''
+        username: ""
       },
       votes: 0,
       done: false
-    }
+    },
+    touchable: false
   };
 
   constructor(props) {
@@ -43,23 +44,26 @@ class TodoCard extends Component {
         }
       });
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
     }
 
     this.setState({ mutating: false });
   };
 
   render() {
-    const { todo, onPress } = this.props;
+    const { todo, onPress, touchable } = this.props;
+
+    const viewProps = touchable
+      ? {
+          shadowOffset: { width: 5, height: 5 },
+          shadowOpacity: 0.2,
+          shadowColor: "black"
+        }
+      : {};
 
     return (
-      <TouchableOpacity onPress={onPress}>
-        <View
-          style={styles.card}
-          shadowOffset={{ width: 5, height: 5 }}
-          shadowOpacity={0.2}
-          shadowColor={'black'}
-        >
+      <TouchableOpacity disabled={!touchable} onPress={onPress}>
+        <View style={styles.card} {...viewProps}>
           <View style={styles.cardPreview}>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>
@@ -101,4 +105,4 @@ const updateTodoMutation = gql`
   }
 `;
 
-export default graphql(updateTodoMutation, { name: 'updateTodo' })(TodoCard);
+export default graphql(updateTodoMutation, { name: "updateTodo" })(TodoCard);

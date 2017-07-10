@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Text,
   TouchableOpacity,
   View
-} from 'react-native';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import _ from 'lodash';
-import styles from './styles';
-import { TodoCard, Button } from '../../Components';
-import connect from '../../connect';
+} from "react-native";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
+import _ from "lodash";
+import styles from "./styles";
+import { TodoCard, Button } from "../../Components";
+import connect from "../../connect";
 
 class ListScreen extends Component {
   constructor(props) {
@@ -57,9 +57,9 @@ class ListScreen extends Component {
     let edges = prev.getTodoList.todos.edges;
     const todoEdge = subscriptionData.data.payload.edge;
     const event = subscriptionData.data.payload.mutation;
-    if (event === 'createTodo') {
+    if (event === "createTodo") {
       edges = edges.concat(todoEdge);
-    } else if (event === 'deleteTodo') {
+    } else if (event === "deleteTodo") {
       edges = edges.filter(edge => edge.node.id !== todoEdge.node.id);
     } else {
       edges = edges.map(edge => {
@@ -91,8 +91,9 @@ class ListScreen extends Component {
       <TodoCard
         todo={todo}
         onPress={() => {
-          this.props.navigation.navigate('Todo', { todo });
+          this.props.navigation.navigate("Todo", { todoId: todo.id });
         }}
+        touchable
       />
     );
   };
@@ -129,8 +130,8 @@ class ListScreen extends Component {
           refreshing={loading}
           data={_.orderBy(
             getTodoList.todos.edges,
-            ['node.votes.aggregations.count'],
-            ['desc']
+            ["node.votes.aggregations.count"],
+            ["desc"]
           )}
           keyExtractor={item => item.node.id}
           renderItem={this.renderItem}
@@ -227,7 +228,7 @@ ${fragments.todoFragment}
 
 export default connect(
   graphql(getTodoListQuery, {
-    name: 'getList',
+    name: "getList",
     options: props => ({
       variables: {
         listId: props.navigation.state.params.node.id,

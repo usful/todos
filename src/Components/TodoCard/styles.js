@@ -16,13 +16,12 @@ export default StyleSheet.create({
     marginBottom:10,
   },
   cardActions: {
-    flex:1,
     display:'flex',
     flexDirection:'column',
     justifyContent:'space-between'
   },
   cardPreview:{
-    flex:2,
+    flex:1,
     display:'flex',
     flexDirection:'column',
     justifyContent:'space-around',

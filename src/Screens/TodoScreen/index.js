@@ -1,29 +1,75 @@
-import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet } from 'react-native';
-import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
+import React, { Component } from "react";
+import {
+  ActivityIndicator,
+  Text,
+  View,
+  ScrollView,
+  StyleSheet
+} from "react-native";
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-import styles from './styles';
-import { Button, VoteCount, TodoCard } from '../../Components';
-import connect from '../../connect';
+import styles from "./styles";
+import { Button, TodoCard } from "../../Components";
+import connect from "../../connect";
 
 class TodoScreen extends Component {
   constructor(props) {
     super(props);
-  
-    const todo = props.navigation.state.params.todo;
-    
-    this.state = {
-      vote: todo.vote,
-      count: todo.votes,
-      voted: todo.voted
+    this.subscribed = false;
+  }
+
+  componentDidUpdate() {
+    if (!this.props.getTodo.loading) {
+      console.log(this.props.getTodo);
+      if (!this.subscribed) {
+        this.props.getTodo.subscribeToMore({
+          document: todoSubscription,
+          variables: {
+            filter: {
+              id: {
+                eq: this.props.navigation.state.params.todoId
+              }
+            }
+          },
+          updateQuery: this.updateTodoInfo
+        });
+
+        this.props.getTodo.subscribeToMore({
+          document: voteSubscription,
+          variables: {
+            filter: {
+              todoId: {
+                eq: this.todo.id
+              }
+            }
+          },
+          updateQuery: this.updateTodoInfo
+        });
+        this.subscribed = true;
+      }
+    }
+  }
+
+  updateTodoInfo(prev, { subscriptionData }) {
+    if (!subscriptionData) {
+      return prev;
+    }
+    return {
+      todo: subscriptionData.data.payload.edge.node,
     };
   }
-  
+
   get todo() {
-    return this.props.navigation.state.params.todo;
+    return {
+      ...this.props.getTodo.todo,
+      votes: this.props.getTodo.todo.votes.aggregations.count,
+      vote: this.props.getTodo.todo.usersVote.edges[0],
+      voted: !!this.props.getTodo.todo.usersVote.edges[0]
+    };
   }
-  
+
   addVoteHandler = async () => {
     const { addVote, store } = this.props;
 
@@ -37,14 +83,8 @@ class TodoScreen extends Component {
           }
         }
       });
-
-      this.setState({
-        vote: data.createVote,
-        count: this.state.count + 1,
-        voted: true
-      });
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
     }
   };
 
@@ -55,31 +95,32 @@ class TodoScreen extends Component {
       await deleteVote({
         variables: {
           input: {
-            id: this.state.vote.node.id
+            id: this.todo.vote.node.id
           }
         }
       });
-
-      this.setState({
-        vote: null,
-        count: this.state.count - 1,
-        voted: false
-      });
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
     }
   };
-
   render() {
-    const { count, voted } = this.state.voted;
+    const { loading } = this.props.getTodo;
 
+    if (loading) {
+      //Loading screen
+      return (
+        <View>
+          <ActivityIndicator animating />
+        </View>
+      );
+    }
     return (
       <ScrollView style={styles.container}>
         <View
           style={styles.todo}
           shadowOffset={{ width: 5, height: 5 }}
           shadowOpacity={0.2}
-          shadowColor={'black'}
+          shadowColor={"black"}
         >
           <TodoCard todo={this.todo} />
           <View style={styles.seperator} />
@@ -87,15 +128,18 @@ class TodoScreen extends Component {
             <Text style={styles.bodyText}>
               {this.todo.text}
             </Text>
-
             <Button
               onPress={
-                voted ? this.deleteVoteHandler : this.addVoteHandler
+                this.todo.voted ? this.deleteVoteHandler : this.addVoteHandler
               }
-              text={voted ? 'Vote Down' : 'Vote Up'}
-              inverted={!voted}
+              text={this.todo.voted ? "Vote Down" : "Vote Up"}
+              inverted={!this.todo.voted}
             >
-              <VoteCount count={count} inverted={voted} />
+              <Icon
+                name={this.todo.voted ? "arrow-up" : "arrow-down"}
+                color={!this.todo.voted ? "#e26e64" : "white"}
+                size={20}
+              />
             </Button>
           </View>
         </View>
@@ -125,9 +169,86 @@ const deleteVote = gql`
   }
 `;
 
+const todoFragment = gql`
+  fragment TodoInfo on Todo {
+    id
+    done
+    title
+    text
+    createdAt
+    modifiedAt
+    votes {
+      aggregations {
+        count
+      }
+    }
+    usersVote: votes {
+      edges {
+        node {
+          id
+          user {
+            id
+          }
+        }
+      }
+    }
+    author {
+      username
+    }
+    list {
+      id
+    }
+  }
+`;
+//Think later about people deleting todos and how to react to that
+const todoSubscription = gql`
+  subscription todoUpdates($filter: TodoSubscriptionFilter) {
+    payload:subscribeToTodo(filter:$filter, mutations:[updateTodo]) {
+      edge {
+        node {
+          ...TodoInfo
+        }
+      }
+    }
+  }
+  ${todoFragment}
+`;
+
+const voteSubscription = gql`
+subscription subscribeToVotes($filter: VoteSubscriptionFilter) {
+  payload:subscribeToVote(filter:$filter, mutations:[createVote,deleteVote]){
+    edge:value{
+      node:todo {
+        ...TodoInfo
+      }
+    }
+  }
+}
+${todoFragment}
+`;
+
+const getTodoListQuery = gql`
+query GetListTodos($todoId: ID!) {
+  todo:getTodo(id: $todoId) {
+    ...TodoInfo
+  }
+}
+${todoFragment}
+`;
+
 export default connect(
   compose(
-    graphql(addVote, { name: 'addVote' }),
-    graphql(deleteVote, { name: 'deleteVote' })
+    graphql(addVote, { name: "addVote" }),
+    graphql(deleteVote, { name: "deleteVote" }),
+    graphql(getTodoListQuery, {
+      name: "getTodo",
+      options: props => {
+        return {
+          variables: {
+            todoId: props.navigation.state.params.todoId
+          }
+        };
+      }
+    })
   )(TodoScreen)
 );
