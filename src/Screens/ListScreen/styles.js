@@ -4,6 +4,11 @@ export default StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
+    backgroundColor:'#e26e64',
+  },
+  loading: {
+    height: '100%',
+    width: '100%',
     backgroundColor: 'black',
   },
   emptyList: {
@@ -15,8 +20,10 @@ export default StyleSheet.create({
     fontSize: 24,
     color: '#999',
   },
-  listContainer:{
-    backgroundColor:'#e26e64',
-    paddingTop:20,
+  buttonContainer: {
+    width:"40%",
+    alignSelf: 'flex-end',
+    marginTop:30,
+    padding:10,
   }
 });

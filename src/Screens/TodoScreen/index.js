@@ -20,7 +20,7 @@ class TodoScreen extends Component {
   }
 
   componentWillUnmount() {
-    if (this.subscription) {
+    if (this.subscription.unsubscribe) {
       this.subscription.unsubscribe();
     }
   }

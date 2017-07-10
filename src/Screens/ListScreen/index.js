@@ -22,7 +22,7 @@ class ListScreen extends Component {
   }
 
   componentWillUnmount() {
-    if (this.subscription) {
+    if (this.subscription.unsubscribe) {
       this.subscription.unsubscribe();
     }
   }
@@ -104,7 +104,7 @@ class ListScreen extends Component {
     const { loading, error, getTodoList } = this.props.getList;
     if (loading) {
       return (
-        <View style={styles.container}>
+        <View style={styles.loading}>
           <ActivityIndicator animating />
         </View>
       );
@@ -121,14 +121,18 @@ class ListScreen extends Component {
     }
     return (
       <View style={styles.container}>
-        <Button
-          text="Add Todo"
-          onPress={() => {
-            this.setState({ showTodoAdder: !this.state.showTodoAdder });
-          }}
-        />
+        <View
+          style={styles.buttonContainer}
+        >
+          <Button
+            color="white"
+            text="Add Todo"
+            onPress={() => {
+              this.setState({ showTodoAdder: !this.state.showTodoAdder });
+            }}
+          />
+        </View>
         <FlatList
-          style={styles.listContainer}
           refreshing={loading}
           data={_.orderBy(
             getTodoList.todos.edges,
