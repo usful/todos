@@ -17,48 +17,48 @@ import connect from "../../connect";
 class TodoScreen extends Component {
   constructor(props) {
     super(props);
-    this.subscribed = false;
   }
 
-  componentDidUpdate() {
-    if (!this.props.getTodo.loading) {
-      if (!this.subscribed) {
-        this.props.getTodo.subscribeToMore({
-          document: todoSubscription,
-          variables: {
-            filter: {
-              id: {
-                eq: this.props.navigation.state.params.todoId
-              }
-            },
-            where: {
-              userId:{
-                eq: this.props.store.user.id,
-              }
-            }
-          },
-          updateQuery: this.updateTodoInfo
-        });
-
-        this.props.getTodo.subscribeToMore({
-          document: voteSubscription,
-          variables: {
-            filter: {
-              todoId: {
-                eq: this.todo.id
-              }
-            },
-            where: {
-              userId:{
-                eq: this.props.store.user.id,
-              }
-            }
-          },
-          updateQuery: this.updateTodoInfo
-        });
-        this.subscribed = true;
-      }
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
+  }
+
+  componentDidMount() {
+    this.props.getTodo.subscribeToMore({
+      document: todoSubscription,
+      variables: {
+        filter: {
+          id: {
+            eq: this.props.navigation.state.params.todoId
+          }
+        },
+        where: {
+          userId: {
+            eq: this.props.store.user.id
+          }
+        }
+      },
+      updateQuery: this.updateTodoInfo
+    });
+
+    this.props.getTodo.subscribeToMore({
+      document: voteSubscription,
+      variables: {
+        filter: {
+          todoId: {
+            eq: this.props.navigation.state.params.todoId
+          }
+        },
+        where: {
+          userId: {
+            eq: this.props.store.user.id
+          }
+        }
+      },
+      updateQuery: this.updateTodoInfo
+    });
   }
 
   updateTodoInfo(prev, { subscriptionData }) {
@@ -66,7 +66,7 @@ class TodoScreen extends Component {
       return prev;
     }
     return {
-      todo: subscriptionData.data.payload.edge.node,
+      todo: subscriptionData.data.payload.edge.node
     };
   }
 
@@ -131,7 +131,7 @@ class TodoScreen extends Component {
           shadowOpacity={0.2}
           shadowColor={"black"}
         >
-          <TodoCard todo={this.todo}/>
+          <TodoCard todo={this.todo} />
           <View style={styles.seperator} />
           <View style={styles.body}>
             <Text style={styles.bodyText}>
@@ -256,8 +256,8 @@ export default connect(
           variables: {
             todoId: props.navigation.state.params.todoId,
             where: {
-              userId:{
-                eq: props.store.user.id,
+              userId: {
+                eq: props.store.user.id
               }
             }
           }

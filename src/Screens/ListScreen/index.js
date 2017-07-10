@@ -16,42 +16,42 @@ import connect from "../../connect";
 class ListScreen extends Component {
   constructor(props) {
     super(props);
-    this.subscribed = false;
     this.state = {
       showTodoAdder: false
     };
   }
 
-  componentDidUpdate() {
-    if (!this.props.getList.loading) {
-      if(!this.subscribed) {
-        this.props.getList.subscribeToMore({
-          document: todosSubscription,
-          variables: {
-            filter: {
-              listId: {
-                eq: this.props.navigation.state.params.node.id
-              }
-            },
-            id: this.props.store.user.id
-          },
-          updateQuery: this.updateData
-        });
-        this.props.getList.subscribeToMore({
-          document: voteSubscription,
-          variables: {
-            filter: {
-              todolistId: {
-                eq: this.props.navigation.state.params.node.id
-              }
-            },
-            id: this.props.store.user.id
-          },
-          updateQuery: this.updateData
-        });
-        this.subscribed = true;
-      }
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
+  }
+
+  componentDidMount() {
+    this.subscription = this.props.getList.subscribeToMore({
+      document: todosSubscription,
+      variables: {
+        filter: {
+          listId: {
+            eq: this.props.navigation.state.params.node.id
+          }
+        },
+        id: this.props.store.user.id
+      },
+      updateQuery: this.updateData
+    });
+    this.props.getList.subscribeToMore({
+      document: voteSubscription,
+      variables: {
+        filter: {
+          todolistId: {
+            eq: this.props.navigation.state.params.node.id
+          }
+        },
+        id: this.props.store.user.id
+      },
+      updateQuery: this.updateData
+    });
   }
 
   updateData(prev, { subscriptionData }) {
@@ -86,7 +86,7 @@ class ListScreen extends Component {
   renderItem = ({ item }) => {
     const todo = {
       ...item.node,
-      votes: item.node.votes.aggregations.count,
+      votes: item.node.votes.aggregations.count
     };
 
     return (
