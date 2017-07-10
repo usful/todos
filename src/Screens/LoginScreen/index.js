@@ -78,8 +78,18 @@ class Login extends Component {
             secureTextEntry
           />
           <View style={styles.buttons}>
-            <Button loading={this.state.loading} text="Login" onPress={() => this.handleLoginPress()} />
-            <Link text="Register" onPress={() => this.handleRegisterPress()} />
+            <Button
+              loading={this.state.loading}
+              text="Login" onPress={() => this.handleLoginPress()}
+              backgroundColor="white"
+            />
+            <Button
+              text="Register"
+              onPress={() => this.handleRegisterPress()}
+              borderColor="white"
+              borderWidth={1}
+              fontColor="white"
+            />
           </View>
         </View>
 
