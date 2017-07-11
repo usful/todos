@@ -64,7 +64,6 @@ class Home extends Component {
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
-    console.log('todoLists', this.props.getLists.getUser);
     if (loading) {
       return (
         <View style={styles.container}>

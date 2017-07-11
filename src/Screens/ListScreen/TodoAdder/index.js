@@ -37,6 +37,7 @@ class TodoAdder extends Component {
     const { visible, close } = this.props;
     return (
       <Modal
+        animationType={"slide"}
         transparent={true}
         visible={visible}
         onRequestClose={close}
