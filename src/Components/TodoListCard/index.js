@@ -44,7 +44,7 @@ class TodoListCard extends Component {
   };
 
   render() {
-    const { data, owner, onPress } = this.props;
+    const { data, owner, onPress, handleMembersClick } = this.props;
 
     const dateString = Moment(data.createdAt).calendar();
 
@@ -78,6 +78,10 @@ class TodoListCard extends Component {
               {`${data.completedTodos.aggregations.count} of ${data.totalTodos
                 .aggregations.count} todos completed`}
             </Text>
+            <Button
+              onPress={() => handleMembersClick()}
+              text="members"
+            />
           </View>
         </View>
       </TouchableOpacity>
