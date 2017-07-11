@@ -30,7 +30,6 @@ class MembersScreen extends Component {
 
   renderMember = ({ item: user }) => {
     const isOwner = (user.id === this.props.todoList.getTodoList.createdBy.id);
-    console.log('isOwner', isOwner);
     return (
       <View>
         <Text>{user.username}{user.owner ? '(owner)' : ''}</Text>
@@ -59,8 +58,6 @@ class MembersScreen extends Component {
           },
         },
       });
-
-      console.log('data', data);
     } catch(error) {
       console.log('[Error] removing member from todo list', error);
     }
@@ -87,7 +84,6 @@ class MembersScreen extends Component {
   }
 
   render() {
-    console.log('props', this.props);
     const { getTodoList, loading } = this.props.todoList;
 
     if (loading) {
@@ -104,8 +100,6 @@ class MembersScreen extends Component {
       owner: true,
       ... owner,
     });
-
-    console.log('list', getTodoList);
 
     return (
       <View>

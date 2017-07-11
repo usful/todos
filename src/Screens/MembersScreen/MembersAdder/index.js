@@ -58,7 +58,6 @@ class MembersAdder extends Component {
   }
 
   render() {
-    console.log('render props', this.props);
     const {
       visible,
       close,

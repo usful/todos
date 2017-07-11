@@ -25,5 +25,9 @@ export default StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop:30,
     padding:10,
+  },
+  listItem: {
+    margin:15,
+    marginBottom:0,
   }
 });

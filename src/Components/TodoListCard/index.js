@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
-import Moment from 'moment';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { Component } from "react";
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
+import Moment from "moment";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-import styles from './styles';
-import { Button } from '../index';
-import connect from '../../connect';
+import styles from "./styles";
+import { Button } from "../index";
+import connect from "../../connect";
 
 class TodoListCard extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class TodoListCard extends Component {
         }
       });
     } catch (error) {
-      console.log('error', error);
+      console.log("error", error);
       this.setState({ mutating: false });
     }
   };
@@ -54,7 +54,7 @@ class TodoListCard extends Component {
           style={styles.card}
           shadowOffset={{ width: 5, height: 5 }}
           shadowOpacity={0.2}
-          shadowColor={'black'}
+          shadowColor={"black"}
         >
           <View style={styles.cardContent}>
             <View style={styles.titleContainer}>
@@ -65,23 +65,20 @@ class TodoListCard extends Component {
             <Button
               onPress={() => (this.state.mutating ? null : this.handleDelete())}
               loading={this.state.mutating}
-              text={owner ? 'delete' : 'remove'}
+              text={owner ? "delete" : "remove"}
               inverted
             />
           </View>
           <View style={styles.cardContent}>
             <Text>
-              {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
+              {`Author: ${owner ? "You" : data.createdBy.username}\n`}
               {`Created ${dateString}\n`}
               {`Number of members: ${data.members.aggregations.count +
                 (owner ? 1 : 0)}\n`}
               {`${data.completedTodos.aggregations.count} of ${data.totalTodos
                 .aggregations.count} todos completed`}
             </Text>
-            <Button
-              onPress={() => handleMembersClick()}
-              text="members"
-            />
+            <Button onPress={() => handleMembersClick()} text="members" />
           </View>
         </View>
       </TouchableOpacity>
@@ -107,7 +104,7 @@ const deleteTodoList = gql`
 
 export default connect(
   compose(
-    graphql(leaveList, { name: 'leaveList' }),
-    graphql(deleteTodoList, { name: 'deleteList' })
+    graphql(leaveList, { name: "leaveList" }),
+    graphql(deleteTodoList, { name: "deleteList" })
   )(TodoListCard)
 );

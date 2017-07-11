@@ -64,7 +64,6 @@ class Home extends Component {
 
   render() {
     const { loading, error, getUser } = this.props.getLists;
-    console.log('todoLists', this.props.getLists.getUser);
     if (loading) {
       return (
         <View style={styles.container}>
@@ -172,7 +171,7 @@ export default connect(
       variables: {
         id: props.store.user.id,
       },
-      pollInterval: 5000, // Time for development
+      pollInterval: 1000, // Time for development
     }),
   })(Home),
 );

@@ -87,24 +87,5 @@ const createTodoListMutation = gql`
   }
 `;
 
-// const AddToMembershipConnection = gql`
-//   mutation AddToMembershipConnection($conn: AddToMembershipConnectionInput!) {
-//     addToMembershipConnection(input: $conn) {
-//   		changedMembership {
-//         todoList {
-//           title
-//           members {
-//             edges {
-//               cursor
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
-
-// graphql(AddToMembershipConnection, { name: 'addTodoMembership' })
-
 export default graphql(createTodoListMutation,
   { name: 'createTodoList' })(TodoListAdder);
