@@ -7,33 +7,38 @@ import initialState from './initialState';
 class Store extends EventEmitter {
   constructor() {
     super();
-    this.state = initialState;
-    this.updateState = this.updateState.bind(this);
-    AsyncStorage.getItem('app:state')
-    .then((strState) => {
-      try {
-        loadedState = JSON.parse(strState);
-        this.updateState(loadedState);
-      } catch(e) {
-        console.log('error parsing store state ', e);
-      }
-      this.updateState({initialized:true});
+
+    this._state = initialState;
+
+    this.setup();
+  }
+
+  async setup() {
+    const strState = await AsyncStorage.getItem('app:state');
+
+    try {
+      await this.updateState(JSON.parse(strState));
+      await this.updateState({ initialized: true });
       this.emit('initialized');
-    });
+    } catch (err) {
+      console.error('error parsing store state ', e);
+    }
   }
 
-  getState() {
-    return this.state;
+  get state() {
+    return this._state;
   }
 
-  updateState(newState) {
-    _.merge(this.state, newState);
-    console.log('store update', this.state);
+  async updateState(newState) {
+    _.merge(this._state, newState);
+
+    console.log('store update', this._state);
+
+    await AsyncStorage.setItem('app:state', JSON.stringify(this._state));
+
     this.emit('updated');
 
-    const strState = JSON.stringify(this.state);
-    AsyncStorage.setItem('app:state', strState)
-    .then(() => console.log('AsyncStorage updated'));
+    console.log('AsyncStorage updated');
   }
 }
 
@@ -43,8 +48,10 @@ function connect(BaseComponent) {
   class HOCComponent extends Component {
     constructor(props) {
       super(props);
-      this.updateComponent = this.updateComponent.bind(this);
+
       this.state = { renderCount: 0 };
+
+      this.listener = () => this.updateComponent();
     }
 
     updateComponent() {
@@ -52,19 +59,20 @@ function connect(BaseComponent) {
     }
 
     componentDidMount() {
-      store.on('updated', this.updateComponent);
+      store.on('updated', this.listener);
     }
 
     componentWillUnmount() {
-      store.removeListener('updated', this.updateComponent);
+      store.removeListener('updated', this.listener);
     }
 
     render() {
       return (
         <BaseComponent
           store={store.getState()}
-          updateStore={store.updateState}
-          addStoreListener={(eventString, handler) => {store.on(eventString,handler)}}
+          updateStore={state => store.updateState(state)}
+          addStoreListener={(eventString, handler) =>
+            store.on(eventString, handler)}
           {...this.props}
           renderCount={this.state.renderCount}
         />
