@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 import MembersAdder from './MembersAdder';
-import { Header, Left, Center, Right } from '../../Components';
+import { Header, Left, Center, Right, Button } from '../../Components';
+import gStyles from '../../globalStyles';
 
 class MembersScreen extends Component {
-
   constructor(props) {
     super(props);
 
@@ -24,28 +19,36 @@ class MembersScreen extends Component {
     };
   }
 
-  handleBackPress = () => {
-    this.props.navigation.navigate('Home');
+  componentWillUnmount() {
+    console.log('unmounting MembersScreen');
   }
 
+  handleBackPress = () => {
+    this.props.navigation.navigate('Home');
+  };
   renderMember = ({ item: user }) => {
-    const isOwner = (user.id === this.props.todoList.getTodoList.createdBy.id);
-    console.log('isOwner', isOwner);
+    const { removingMember } = this.state;
+    const isOwner = user.id === this.props.todoList.getTodoList.createdBy.id;
+
     return (
-      <View>
-        <Text>{user.username}{user.owner ? '(owner)' : ''}</Text>
-        { isOwner
+      <View style={[gStyles.card, styles.card]}>
+        <View style={styles.memberTextContainer}>
+          <Text style={styles.memberText}>
+            {user.username}{user.owner ? '(owner)' : ''}
+          </Text>
+        </View>
+        {isOwner
           ? null
-          : <TouchableOpacity onPress={() => this.handleRemoveMemberPress(user)} >
-            <Text>(Remove)</Text>
-          </TouchableOpacity>
-        }
+          : <Button
+              text={'Remove'}
+              loading={removingMember}
+              onPress={() => this.handleRemoveMemberPress(user)}
+            />}
 
       </View>
     );
-  }
-
-  handleRemoveMemberPress = async(user) => {
+  };
+  handleRemoveMemberPress = async user => {
     const { removeMember } = this.props;
     this.setState({ removingMember: true });
 
@@ -61,92 +64,96 @@ class MembersScreen extends Component {
       });
 
       console.log('data', data);
-    } catch(error) {
+    } catch (error) {
       console.log('[Error] removing member from todo list', error);
     }
 
     this.refetch();
     this.setState({ removingMember: false });
-  }
-
+  };
   handleShowAdderPress = () => {
     this.setState({ showAdder: true, membersSearch: '' });
-  }
-
+  };
   handleCloseAdderPress = () => {
     this.setState({ showAdder: false });
-  }
-
-  updateMembersSearch = (text) => {
+  };
+  updateMembersSearch = text => {
     this.setState({ membersSearch: text });
-  }
-
+  };
   refetch = () => {
     const query = this.props.todoList;
     query.refetch(query.variables);
-  }
-
+  };
   render() {
-    console.log('props', this.props);
+    console.log('rendering MembersScreen');
     const { getTodoList, loading } = this.props.todoList;
-
-    if (loading) {
-      return (
-        <View><Text>Loading...</Text></View>
-      )
-    }
-
-    const members = getTodoList.members.edges.map((edge) => {
-      return edge.node;
-    });
-    const owner = getTodoList.createdBy;
-    members.unshift({
-      owner: true,
-      ... owner,
-    });
-
     console.log('list', getTodoList);
 
     return (
       <View>
-
         {/** Header **/}
         <Header>
           <Left>
             <TouchableOpacity onPress={this.handleBackPress}>
-              <Icon name="chevron-left" size={30} />
+              <Icon name="chevron-left" size={30} color="white" />
             </TouchableOpacity>
           </Left>
           <Center>
-            <Text>Members</Text>
+            <Text style={gStyles.headerTitle}>Members</Text>
           </Center>
           <Right>
             <TouchableOpacity onPress={this.handleShowAdderPress}>
-              <Icon name="add" size={30} />
+              <Icon name="add" size={30} color="white" />
             </TouchableOpacity>
           </Right>
         </Header>
 
-        {/** Members **/}
-        <View>
-          <FlatList
-            data={members}
-            renderItem={this.renderMember}
-            keyExtractor={(item) => item.id}
-            ListEmptyComponent={<View><Text>Empty</Text></View>}
-          />
-        </View>
+        {(() => {
+          if (loading) {
+            return <View><Text>Loading...</Text></View>;
+          }
 
-        {/** Members Adder **/}
-        <MembersAdder
-          visible={this.state.showAdder}
-          close={this.handleCloseAdderPress}
-          todoList={getTodoList}
-          membersSearch={this.state.membersSearch}
-          updateMembersSearch={this.updateMembersSearch}
-          refetch={this.refetch}
-        />
+          if (!getTodoList) {
+            return (
+              <View>
+                <Text>Looks like this Todo List was deleted :O!</Text>
+              </View>
+            );
+          }
 
+          const members = getTodoList.members.edges.map(edge => {
+            return edge.node;
+          });
+          const owner = getTodoList.createdBy;
+          members.unshift({
+            owner: true,
+            ...owner,
+          });
+
+          return (
+            <View>
+              {/** Members **/}
+              <View>
+                <FlatList
+                  data={members}
+                  renderItem={this.renderMember}
+                  keyExtractor={item => item.id}
+                  ListEmptyComponent={<View><Text>Empty</Text></View>}
+                />
+              </View>
+
+              {/** Members Adder **/}
+              <MembersAdder
+                visible={this.state.showAdder}
+                close={this.handleCloseAdderPress}
+                todoList={getTodoList}
+                membersSearch={this.state.membersSearch}
+                updateMembersSearch={this.updateMembersSearch}
+                refetch={this.refetch}
+              />
+            </View>
+          );
+        })()}
       </View>
     );
   }
@@ -185,13 +192,13 @@ const removeUserFromListMutation = gql`
 
 export default compose(
   graphql(getTodoListQuery, {
-   name: 'todoList',
-   options: props => ({
-     variables: {
-       id: props.navigation.state.params.node.id,
-     },
-     pollInterval: 5000, // Time for development
-   }),
+    name: 'todoList',
+    options: props => ({
+      variables: {
+        id: props.navigation.state.params.node.id,
+      },
+      pollInterval: 5000, // Time for development
+    }),
   }),
   graphql(removeUserFromListMutation, { name: 'removeMember' }),
 )(MembersScreen);

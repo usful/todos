@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  modal: {
-  },
   container: {
     justifyContent: 'center',
     flex: 1,
@@ -10,19 +8,8 @@ export default StyleSheet.create({
   },
   content: {
     paddingTop: 20,
-    height: 200,
+    height: '80%',
     backgroundColor: 'white',
-  },
-  button: {
-    backgroundColor: '#C7584E',
-    padding: 10,
-    margin: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 14,
-    color: 'white',
   },
   textInput: {
     padding: 10,
@@ -30,4 +17,22 @@ export default StyleSheet.create({
     height: 50,
     backgroundColor: 'white',
   },
+  userCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 8,
+    paddingRight: 10,
+    paddingLeft: 10,
+  },
+  usernameTextContainer: {
+    justifyContent: 'center',
+  },
+  usernameText: {
+    fontSize: 18,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: 5,
+  }
 });
