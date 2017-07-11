@@ -38,6 +38,9 @@ class Store extends EventEmitter {
 }
 
 const store = new Store();
+store.once('event', () => {
+  store.setMaxListeners(100);
+});
 
 function connect(BaseComponent) {
   class HOCComponent extends Component {
