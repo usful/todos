@@ -172,7 +172,7 @@ export default connect(
       variables: {
         id: props.store.user.id,
       },
-      pollInterval: 5000, // Time for development
+      pollInterval: 1000, // Time for development
     }),
   })(Home),
 );

@@ -60,7 +60,7 @@ class TodoAdder extends Component {
             />
             <TouchableOpacity onPress={() => this.addNewTodo()}>
               <View style={styles.button}>
-                <Text style={styles.buttonText}>Add new TodoList</Text>
+                <Text style={styles.buttonText}>Create Todo</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={close}>
