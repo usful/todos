@@ -2,17 +2,10 @@ import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import Moment from 'moment';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import styles from './styles';
-import {
-  Button
-} from '../index';
+import { Button } from '../index';
 import connect from '../../connect';
 
 class TodoListCard extends Component {
@@ -20,11 +13,11 @@ class TodoListCard extends Component {
     super(props);
 
     this.state = {
-      mutating: false,
+      mutating: false
     };
   }
 
-  handleDelete = async() => {
+  handleDelete = async () => {
     const { data, owner, deleteList, leaveList, userId } = this.props;
 
     this.setState({ mutating: true });
@@ -35,20 +28,20 @@ class TodoListCard extends Component {
       ? { id: data.id }
       : {
           userId: userId,
-          todoListId: data.id,
+          todoListId: data.id
         };
 
     try {
       const { data } = await handler({
         variables: {
-          input: vars,
-        },
+          input: vars
+        }
       });
     } catch (error) {
       console.log('error', error);
       this.setState({ mutating: false });
     }
-  }
+  };
 
   render() {
     const { data, owner, onPress, handleMembersClick } = this.props;
@@ -59,7 +52,7 @@ class TodoListCard extends Component {
       <TouchableOpacity onPress={onPress}>
         <View
           style={styles.card}
-          shadowOffset={{width:5,height:5}}
+          shadowOffset={{ width: 5, height: 5 }}
           shadowOpacity={0.2}
           shadowColor={'black'}
         >
@@ -70,17 +63,20 @@ class TodoListCard extends Component {
               </Text>
             </View>
             <Button
-              onPress={() => this.state.mutating ? null : this.handleDelete()}
+              onPress={() => (this.state.mutating ? null : this.handleDelete())}
               loading={this.state.mutating}
               text={owner ? 'delete' : 'remove'}
+              inverted
             />
           </View>
           <View style={styles.cardContent}>
             <Text>
               {`Author: ${owner ? 'You' : data.createdBy.username}\n`}
               {`Created ${dateString}\n`}
-              {`Number of members: ${data.members.aggregations.count + (owner?1:0)}\n`}
-              {`${data.completedTodos.aggregations.count} of ${data.totalTodos.aggregations.count} todos completed`}
+              {`Number of members: ${data.members.aggregations.count +
+                (owner ? 1 : 0)}\n`}
+              {`${data.completedTodos.aggregations.count} of ${data.totalTodos
+                .aggregations.count} todos completed`}
             </Text>
             <Button
               onPress={() => handleMembersClick()}
@@ -94,22 +90,24 @@ class TodoListCard extends Component {
 }
 
 const leaveList = gql`
-mutation removeMembership($input:RemoveFromMembershipConnectionInput!) {
-	removeFromMembershipConnection(input:$input){
-	  clientMutationId
-	}
-}`;
+  mutation removeMembership($input: RemoveFromMembershipConnectionInput!) {
+    removeFromMembershipConnection(input: $input) {
+      clientMutationId
+    }
+  }
+`;
 
 const deleteTodoList = gql`
-mutation deleteTodoList($input: DeleteTodoListInput!) {
-  deleteTodoList(input:$input){
-    clientMutationId
+  mutation deleteTodoList($input: DeleteTodoListInput!) {
+    deleteTodoList(input: $input) {
+      clientMutationId
+    }
   }
-}`;
+`;
 
 export default connect(
   compose(
     graphql(leaveList, { name: 'leaveList' }),
-    graphql(deleteTodoList, { name: 'deleteList' }),
-  )(TodoListCard),
+    graphql(deleteTodoList, { name: 'deleteList' })
+  )(TodoListCard)
 );

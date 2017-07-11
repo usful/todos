@@ -6,7 +6,7 @@ import {
   FlatList,
 } from 'react-native';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 import MembersAdder from './MembersAdder';
@@ -20,6 +20,7 @@ class MembersScreen extends Component {
     this.state = {
       showAdder: false,
       membersSearch: '',
+      removingMember: false,
     };
   }
 
@@ -27,12 +28,45 @@ class MembersScreen extends Component {
     this.props.navigation.navigate('Home');
   }
 
-  renderMember = ({ item }) => {
+  renderMember = ({ item: user }) => {
+    const isOwner = (user.id === this.props.todoList.getTodoList.createdBy.id);
+    console.log('isOwner', isOwner);
     return (
       <View>
-        <Text>{item.username}{item.owner ? '(owner)' : ''}</Text>
+        <Text>{user.username}{user.owner ? '(owner)' : ''}</Text>
+        { isOwner
+          ? null
+          : <TouchableOpacity onPress={() => this.handleRemoveMemberPress(user)} >
+            <Text>(Remove)</Text>
+          </TouchableOpacity>
+        }
+
       </View>
     );
+  }
+
+  handleRemoveMemberPress = async(user) => {
+    const { removeMember } = this.props;
+    this.setState({ removingMember: true });
+
+    const listId = this.props.todoList.getTodoList.id;
+    try {
+      const { data } = await removeMember({
+        variables: {
+          removeUserInput: {
+            userId: user.id,
+            todoListId: listId,
+          },
+        },
+      });
+
+      console.log('data', data);
+    } catch(error) {
+      console.log('[Error] removing member from todo list', error);
+    }
+
+    this.refetch();
+    this.setState({ removingMember: false });
   }
 
   handleShowAdderPress = () => {
@@ -71,7 +105,7 @@ class MembersScreen extends Component {
       ... owner,
     });
 
-    console.log('members', members);
+    console.log('list', getTodoList);
 
     return (
       <View>
@@ -139,12 +173,25 @@ const getTodoListQuery = gql`
   }
 `;
 
-export default graphql(getTodoListQuery, {
-  name: 'todoList',
-  options: props => ({
-    variables: {
-      id: props.navigation.state.params.node.id,
-    },
-    pollInterval: 5000, // Time for development
+const removeUserFromListMutation = gql`
+  mutation RemoveUserFromList($removeUserInput: RemoveFromMembershipConnectionInput!) {
+    removeFromMembershipConnection(input: $removeUserInput) {
+  		changedMembership {
+        createdAt
+      }
+    }
+  }
+`;
+
+export default compose(
+  graphql(getTodoListQuery, {
+   name: 'todoList',
+   options: props => ({
+     variables: {
+       id: props.navigation.state.params.node.id,
+     },
+     pollInterval: 5000, // Time for development
+   }),
   }),
-})(MembersScreen);
+  graphql(removeUserFromListMutation, { name: 'removeMember' }),
+)(MembersScreen);

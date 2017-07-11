@@ -5,7 +5,7 @@ import { ApolloProvider } from 'react-apollo';
 import { View, StyleSheet } from 'react-native';
 import {
   SubscriptionClient,
-  addGraphQLSubscriptions,
+  addGraphQLSubscriptions
 } from 'subscriptions-transport-ws';
 import {
   LoginScreen,
@@ -25,11 +25,11 @@ const wsClient = new SubscriptionClient(scapholdWebSocketUrl, {
 
 const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   createNetworkInterface({ uri: scapholdUrl }),
-  wsClient,
+  wsClient
 );
 
 const client = new ApolloClient({
-  networkInterface: networkInterfaceWithSubscriptions,
+  networkInterface: networkInterfaceWithSubscriptions
 });
 
 const genAuthMiddleWare = app => {
@@ -39,12 +39,11 @@ const genAuthMiddleWare = app => {
         req.options.headers = {};
       }
       if (app.props.store.user.isAuthenticated) {
-        req.options.headers[
-          'authorization'
-        ] = `Bearer ${app.props.store.user.token}`;
+        req.options.headers['authorization'] = `Bearer ${app.props.store.user
+          .token}`;
       }
       next();
-    },
+    }
   };
 };
 
@@ -52,42 +51,42 @@ const AuthNavigator = StackNavigator(
   {
     Splash: { screen: SplashScreen },
     Login: { screen: LoginScreen },
-    Register: { screen: RegisterScreen },
+    Register: { screen: RegisterScreen }
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Splash',
-  },
+    initialRouteName: 'Splash'
+  }
 );
 
 const HomeNavigator = StackNavigator(
   {
     Home: { screen: HomeScreen },
     List: { screen: ListScreen },
-    Members: { screen: MembersScreen },
     Todo: { screen: TodoScreen },
+    Members: { screen: MembersScreen },
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Home',
-  },
+    initialRouteName: 'Home'
+  }
 );
 
 const Navigator = StackNavigator(
   {
     Auth: { screen: AuthNavigator },
-    Home: { screen: HomeNavigator },
+    Home: { screen: HomeNavigator }
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Auth',
-  },
+    initialRouteName: 'Auth'
+  }
 );
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
 
 class App extends Component {
@@ -100,7 +99,7 @@ class App extends Component {
     return (
       <View style={styles.container}>
         <ApolloProvider client={client}>
-          <Navigator />
+          <Navigator onNavigationStateChange={null} />
         </ApolloProvider>
       </View>
     );
