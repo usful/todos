@@ -3,8 +3,6 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   card: {
     backgroundColor: "white",
-    margin: 15,
-    marginBottom:0,
     padding:20,
     display:'flex',
     flexDirection:'row',

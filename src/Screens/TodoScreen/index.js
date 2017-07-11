@@ -19,12 +19,6 @@ class TodoScreen extends Component {
     super(props);
   }
 
-  componentWillUnmount() {
-    if (this.subscription.unsubscribe) {
-      this.subscription.unsubscribe();
-    }
-  }
-
   componentDidMount() {
     this.props.getTodo.subscribeToMore({
       document: todoSubscription,
@@ -42,7 +36,6 @@ class TodoScreen extends Component {
       },
       updateQuery: this.updateTodoInfo
     });
-
     this.props.getTodo.subscribeToMore({
       document: voteSubscription,
       variables: {
@@ -83,7 +76,7 @@ class TodoScreen extends Component {
     const { addVote, store } = this.props;
 
     try {
-      const { data } = await addVote({
+      await addVote({
         variables: {
           input: {
             userId: store.user.id,
@@ -202,6 +195,7 @@ const todoFragment = gql`
       }
     }
     author {
+      id
       username
     }
     list {
@@ -209,7 +203,7 @@ const todoFragment = gql`
     }
   }
 `;
-//Think later about people deleting todos and how to react to that
+
 const todoSubscription = gql`
   subscription todoUpdates($filter: TodoSubscriptionFilter, $where: VoteWhereArgs) {
     payload:subscribeToTodo(filter:$filter, mutations:[updateTodo]) {

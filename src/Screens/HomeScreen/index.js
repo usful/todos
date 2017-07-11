@@ -18,7 +18,6 @@ import TodoListAdder from './TodoListAdder';
 import connect from '../../connect';
 
 class Home extends Component {
-
   constructor(props) {
     super(props);
 
@@ -30,10 +29,8 @@ class Home extends Component {
   refetch = () => {
     const query = this.props.getLists;
     query.refetch(query.variables);
-  }
-
+  };
   renderItem = ({ item }) => {
-
     return (
       <TodoListCard
         refetch={this.refetch}
@@ -46,11 +43,10 @@ class Home extends Component {
     );
   };
 
-  handleMembersClick = (item) => {
+  handleMembersClick = item => {
     this.props.navigation.navigate('Members', item);
-  }
-
-  handleListCardPress = (item) => {
+  };
+  handleListCardPress = item => {
     this.props.navigation.navigate('List', item);
   };
 
@@ -63,9 +59,7 @@ class Home extends Component {
   };
 
   render() {
-    console.log('rendering HomeScreen');
     const { loading, error, getUser } = this.props.getLists;
-
     if (loading) {
       return (
         <View style={styles.container}>
@@ -79,7 +73,7 @@ class Home extends Component {
         <View>
           <Text>Error: {error.message}</Text>
         </View>
-      )
+      );
     }
     return (
       <View>
@@ -103,7 +97,7 @@ class Home extends Component {
           style={styles.listContainer}
           refreshing={loading}
           data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
-          keyExtractor={(item) => item.node.id}
+          keyExtractor={item => item.node.id}
           renderItem={this.renderItem}
           ListEmptyComponent={
             <View style={styles.emptyList}>
@@ -142,7 +136,7 @@ const fragments = {
         }
       }
     }
-  `
+  `,
 };
 
 const getTodoListsQuery = gql`
@@ -173,7 +167,7 @@ export default connect(
       variables: {
         id: props.store.user.id,
       },
-      pollInterval: 5000, // Time for development
+      pollInterval: 1000, // Time for development
     }),
   })(Home),
 );

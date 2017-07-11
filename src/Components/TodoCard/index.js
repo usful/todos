@@ -53,17 +53,9 @@ class TodoCard extends Component {
   render() {
     const { todo, onPress, touchable } = this.props;
 
-    const viewProps = touchable
-      ? {
-          shadowOffset: { width: 5, height: 5 },
-          shadowOpacity: 0.2,
-          shadowColor: "black"
-        }
-      : {};
-
     return (
       <TouchableOpacity disabled={!touchable} onPress={onPress}>
-        <View style={styles.card} {...viewProps}>
+        <View style={styles.card}>
           <View style={styles.cardPreview}>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>

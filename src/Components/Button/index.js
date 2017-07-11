@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import styles from './styles';
 import chroma from 'chroma-js';
 

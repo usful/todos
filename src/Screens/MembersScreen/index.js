@@ -17,11 +17,11 @@ class MembersScreen extends Component {
       membersSearch: '',
       removingMember: false,
     };
-  }
+  };
 
   componentWillUnmount() {
     console.log('unmounting MembersScreen');
-  }
+  };
 
   handleBackPress = () => {
     this.props.navigation.navigate('Home');
@@ -62,8 +62,6 @@ class MembersScreen extends Component {
           },
         },
       });
-
-      console.log('data', data);
     } catch (error) {
       console.log('[Error] removing member from todo list', error);
     }
@@ -85,9 +83,7 @@ class MembersScreen extends Component {
     query.refetch(query.variables);
   };
   render() {
-    console.log('rendering MembersScreen');
     const { getTodoList, loading } = this.props.todoList;
-    console.log('list', getTodoList);
 
     return (
       <View>
