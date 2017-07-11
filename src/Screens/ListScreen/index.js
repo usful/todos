@@ -85,13 +85,20 @@ class ListScreen extends Component {
     };
 
     return (
-      <TodoCard
-        todo={todo}
-        onPress={() => {
-          this.props.navigation.navigate("Todo", { todoId: todo.id });
-        }}
-        touchable
-      />
+      <View
+        shadowOffset={{ width: 5, height: 5 }}
+        shadowOpacity={0.2}
+        shadowColor={"black"}
+        style={styles.listItem}
+      >
+        <TodoCard
+          todo={todo}
+          onPress={() => {
+            this.props.navigation.navigate("Todo", { todoId: todo.id });
+          }}
+          touchable
+        />
+      </View>
     );
   };
 

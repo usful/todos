@@ -11,7 +11,7 @@ import { graphql, compose } from "react-apollo";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import styles from "./styles";
-import { Button, TodoCard } from "../../Components";
+import { Button, TodoCard, IconButton } from "../../Components";
 import connect from "../../connect";
 
 class TodoScreen extends Component {
@@ -76,7 +76,7 @@ class TodoScreen extends Component {
     const { addVote, store } = this.props;
 
     try {
-      const { data } = await addVote({
+      await addVote({
         variables: {
           input: {
             userId: store.user.id,
@@ -195,6 +195,7 @@ const todoFragment = gql`
       }
     }
     author {
+      id
       username
     }
     list {
@@ -202,7 +203,7 @@ const todoFragment = gql`
     }
   }
 `;
-//Think later about people deleting todos and how to react to that
+
 const todoSubscription = gql`
   subscription todoUpdates($filter: TodoSubscriptionFilter, $where: VoteWhereArgs) {
     payload:subscribeToTodo(filter:$filter, mutations:[updateTodo]) {

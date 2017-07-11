@@ -5,6 +5,16 @@ export default StyleSheet.create({
     paddingTop: 35,
     backgroundColor: "#e26e64"
   },
+  optionsContainer: {
+    display:'flex',
+    flexDirection:'row',
+    justifyContent:'flex-end',
+    margin:10,
+    marginRight:0,
+  },
+  iconButtonContainer: {
+    marginLeft:10,
+  },
   todo: {
     backgroundColor: "white",
     minHeight: 250
