@@ -12,9 +12,6 @@ export default StyleSheet.create({
     margin:10,
     marginRight:0,
   },
-  iconButtonContainer: {
-    marginLeft:10,
-  },
   todo: {
     backgroundColor: "white",
     minHeight: 250

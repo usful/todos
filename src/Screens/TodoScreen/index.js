@@ -11,7 +11,7 @@ import { graphql, compose } from "react-apollo";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import styles from "./styles";
-import { Button, TodoCard, IconButton } from "../../Components";
+import { Button, TodoCard } from "../../Components";
 import connect from "../../connect";
 
 class TodoScreen extends Component {
