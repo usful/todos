@@ -69,7 +69,7 @@ function connect(BaseComponent) {
     render() {
       return (
         <BaseComponent
-          store={store.getState()}
+          store={store.state}
           updateStore={state => store.updateState(state)}
           addStoreListener={(eventString, handler) =>
             store.on(eventString, handler)}
