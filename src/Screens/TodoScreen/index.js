@@ -19,12 +19,6 @@ class TodoScreen extends Component {
     super(props);
   }
 
-  componentWillUnmount() {
-    if (this.subscription.unsubscribe) {
-      this.subscription.unsubscribe();
-    }
-  }
-
   componentDidMount() {
     this.props.getTodo.subscribeToMore({
       document: todoSubscription,
@@ -42,7 +36,6 @@ class TodoScreen extends Component {
       },
       updateQuery: this.updateTodoInfo
     });
-
     this.props.getTodo.subscribeToMore({
       document: voteSubscription,
       variables: {

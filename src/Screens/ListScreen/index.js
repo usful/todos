@@ -11,6 +11,7 @@ import { graphql } from "react-apollo";
 import _ from "lodash";
 import styles from "./styles";
 import { TodoCard, Button } from "../../Components";
+import TodoAdder from "./TodoAdder";
 import connect from "../../connect";
 
 class ListScreen extends Component {
@@ -21,14 +22,8 @@ class ListScreen extends Component {
     };
   }
 
-  componentWillUnmount() {
-    if (this.subscription.unsubscribe) {
-      this.subscription.unsubscribe();
-    }
-  }
-
   componentDidMount() {
-    this.subscription = this.props.getList.subscribeToMore({
+    this.props.getList.subscribeToMore({
       document: todosSubscription,
       variables: {
         filter: {
@@ -121,9 +116,7 @@ class ListScreen extends Component {
     }
     return (
       <View style={styles.container}>
-        <View
-          style={styles.buttonContainer}
-        >
+        <View style={styles.buttonContainer}>
           <Button
             color="white"
             text="Add Todo"
@@ -132,6 +125,14 @@ class ListScreen extends Component {
             }}
           />
         </View>
+        <TodoAdder
+          visible={this.state.showTodoAdder}
+          listId={this.props.navigation.state.params.node.id}
+          authorId={this.props.store.user.id}
+          close={() => {
+            this.setState({ showTodoAdder: false });
+          }}
+        />
         <FlatList
           refreshing={loading}
           data={_.orderBy(
