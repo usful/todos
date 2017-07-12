@@ -10,6 +10,7 @@ import {
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import Icon from "react-native-vector-icons/FontAwesome";
+import MatIcon from "react-native-vector-icons/MaterialIcons";
 
 import styles from "./styles";
 import { Button, TodoCard, Header, Left } from "../../Components";
@@ -129,7 +130,7 @@ class TodoScreen extends Component {
         <Header>
           <Left>
             <TouchableOpacity onPress={this.handleBackPress}>
-              <Icon name="chevron-left" size={30} color="white" />
+              <MatIcon name="chevron-left" size={30} color="white" />
             </TouchableOpacity>
           </Left>
         </Header>
