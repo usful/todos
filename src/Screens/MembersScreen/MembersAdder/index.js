@@ -10,6 +10,8 @@ import {
 import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import styles from './styles';
+import { Button } from '../../../Components';
+import gStyles from '../../../globalStyles';
 
 class MembersAdder extends Component {
   constructor(props) {
@@ -26,12 +28,19 @@ class MembersAdder extends Component {
   }
 
   renderFoundUser = ({ item: user }) => {
+    const { addingUser } = this.state;
+
     return (
-      <View>
-        <Text>{user.node.username}</Text>
-        <TouchableOpacity onPress={() => this.handleAddUserPress(user.node)}>
-          <Text>(Add member)</Text>
-        </TouchableOpacity>
+      <View style={styles.userCard}>
+        <View style={styles.usernameTextContainer}>
+          <Text style={styles.usernameText}>{user.node.username}</Text>
+        </View>
+        <Button
+          style={styles.userAddBtn}
+          onPress={() => this.handleAddUserPress(user.node)}
+          text={'(Add Member)'}
+          loading={addingUser}
+        />
       </View>
     )
   }
@@ -82,9 +91,6 @@ class MembersAdder extends Component {
               value={membersSearch}
               placeholder="Username"
             />
-            <TouchableOpacity onPress={close}>
-              <Text>Close modal</Text>
-            </TouchableOpacity>
 
             {/** Users found **/}
             { searchUser.loading
@@ -97,6 +103,13 @@ class MembersAdder extends Component {
               />
             }
 
+            {/** Footer close **/}
+            <View style={styles.footer}>
+              <Button
+                text={'Close Modal'}
+                onPress={close}
+                />
+            </View>
           </View>
         </View>
       </Modal>

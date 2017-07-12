@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import _ from "lodash";
 import styles from "./styles";
-import { TodoCard, Button } from "../../Components";
+import { TodoCard, Button, Header, Left, Center, Right } from "../../Components";
 import TodoAdder from "./TodoAdder";
 import connect from "../../connect";
+import gStyles from '../../globalStyles';
 
 class ListScreen extends Component {
   constructor(props) {
@@ -102,59 +104,88 @@ class ListScreen extends Component {
     );
   };
 
+  handleShowAdderPress = () => {
+    this.setState({ showTodoAdder: !this.state.showTodoAdder });
+  };
+
+  handleBackPress = () => {
+    this.props.navigation.navigate('Home');
+  };
+
   render() {
     const { loading, error, getTodoList } = this.props.getList;
-    if (loading) {
-      return (
-        <View style={styles.loading}>
-          <ActivityIndicator animating />
-        </View>
-      );
-    }
+    const listTitle = this.props.navigation.state.params.node.title;
 
-    if (error) {
-      return (
-        <View>
-          <Text>
-            Error: {error.message}
-          </Text>
-        </View>
-      );
-    }
     return (
-      <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          <Button
-            color="white"
-            text="Add Todo"
-            onPress={() => {
-              this.setState({ showTodoAdder: !this.state.showTodoAdder });
-            }}
-          />
-        </View>
-        <TodoAdder
-          visible={this.state.showTodoAdder}
-          listId={this.props.navigation.state.params.node.id}
-          authorId={this.props.store.user.id}
-          close={() => {
-            this.setState({ showTodoAdder: false });
-          }}
-        />
-        <FlatList
-          refreshing={loading}
-          data={_.orderBy(
-            getTodoList.todos.edges,
-            ["node.votes.aggregations.count"],
-            ["desc"]
-          )}
-          keyExtractor={item => item.node.id}
-          renderItem={this.renderItem}
-          ListEmptyComponent={
-            <View style={styles.emptyList}>
-              <Text style={styles.emptyListText}>No Todos</Text>
-            </View>
+      <View style={gStyles.container}>
+
+        {/** Header **/}
+        <Header>
+          <Left>
+            <TouchableOpacity onPress={this.handleBackPress}>
+              <Icon name="chevron-left" size={30} color="white" />
+            </TouchableOpacity>
+          </Left>
+          <Center>
+            <Text style={gStyles.headerTitle}>
+              {listTitle}
+            </Text>
+          </Center>
+          <Right>
+            <TouchableOpacity onPress={this.handleShowAdderPress}>
+              <Icon name="add" size={30} color="white" />
+            </TouchableOpacity>
+          </Right>
+        </Header>
+
+        {/** Content **/}
+        {(() => {
+          if (loading) {
+            return (
+              <View style={styles.loading}>
+                <ActivityIndicator animating />
+              </View>
+            );
           }
-        />
+
+          if (error) {
+            return (
+              <View>
+                <Text>
+                  Error: {error.message}
+                </Text>
+              </View>
+            );
+          }
+
+          return (
+            <View>
+              <TodoAdder
+                visible={this.state.showTodoAdder}
+                listId={this.props.navigation.state.params.node.id}
+                authorId={this.props.store.user.id}
+                close={() => {
+                  this.setState({ showTodoAdder: false });
+                }}
+              />
+              <FlatList
+                refreshing={loading}
+                data={_.orderBy(
+                  getTodoList.todos.edges,
+                  ["node.votes.aggregations.count"],
+                  ["desc"]
+                )}
+                keyExtractor={item => item.node.id}
+                renderItem={this.renderItem}
+                ListEmptyComponent={
+                  <View style={styles.emptyList}>
+                    <Text style={styles.emptyListText}>No Todos</Text>
+                  </View>
+                }
+              />
+            </View>
+          );
+        })()}
       </View>
     );
   }

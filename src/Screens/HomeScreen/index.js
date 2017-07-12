@@ -10,15 +10,14 @@ import {
 } from 'react-native';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
-import { TodoListCard } from '../../Components';
+import { TodoListCard, Header, Left, Center, Right } from '../../Components';
 import TodoListAdder from './TodoListAdder';
-
+import gStyles from '../../globalStyles';
 import connect from '../../connect';
 
 class Home extends Component {
-
   constructor(props) {
     super(props);
 
@@ -30,10 +29,8 @@ class Home extends Component {
   refetch = () => {
     const query = this.props.getLists;
     query.refetch(query.variables);
-  }
-
+  };
   renderItem = ({ item }) => {
-
     return (
       <TodoListCard
         refetch={this.refetch}
@@ -46,11 +43,10 @@ class Home extends Component {
     );
   };
 
-  handleMembersClick = (item) => {
+  handleMembersClick = item => {
     this.props.navigation.navigate('Members', item);
-  }
-
-  handleListCardPress = (item) => {
+  };
+  handleListCardPress = item => {
     this.props.navigation.navigate('List', item);
   };
 
@@ -77,31 +73,41 @@ class Home extends Component {
         <View>
           <Text>Error: {error.message}</Text>
         </View>
-      )
+      );
     }
     return (
-      <View>
+      <View style={gStyles.container}>
         <StatusBar backgroundColor="#C7584E" barStyle="light-content" />
-        <View style={styles.menu}>
-          <TouchableOpacity
-            onPress={this.handleAddListPress}
-            style={styles.addButton}
-          >
-            <Text style={styles.addButtonText}>
-              Add List
-            </Text>
-          </TouchableOpacity>
-        </View>
+
+        {/** Header **/}
+        <Header>
+          <Left>
+            {/**
+            <TouchableOpacity onPress={this.handleBackPress}>
+              <Icon name="chevron-left" size={30} color="white" />
+            </TouchableOpacity>
+            **/}
+          </Left>
+          <Center>
+            <Text style={gStyles.headerTitle}>My Lists</Text>
+          </Center>
+          <Right>
+            <TouchableOpacity onPress={this.handleAddListPress}>
+              <Icon name="add" size={30} color="white" />
+            </TouchableOpacity>
+          </Right>
+        </Header>
+
         <TodoListAdder
           visible={this.state.showListAdder}
           close={this.handleCloseListAdder}
           userId={this.props.store.user.id}
         />
         <FlatList
-          style={styles.listContainer}
+          style={gStyles.container}
           refreshing={loading}
           data={getUser.todoLists.edges.concat(getUser.createdLists.edges)}
-          keyExtractor={(item) => item.node.id}
+          keyExtractor={item => item.node.id}
           renderItem={this.renderItem}
           ListEmptyComponent={
             <View style={styles.emptyList}>
@@ -140,7 +146,7 @@ const fragments = {
         }
       }
     }
-  `
+  `,
 };
 
 const getTodoListsQuery = gql`
