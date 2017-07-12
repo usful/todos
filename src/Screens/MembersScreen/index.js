@@ -86,7 +86,7 @@ class MembersScreen extends Component {
     const { getTodoList, loading } = this.props.todoList;
 
     return (
-      <View>
+      <View style={gStyles.container}>
         {/** Header **/}
         <Header>
           <Left>
@@ -105,14 +105,15 @@ class MembersScreen extends Component {
         </Header>
 
         {(() => {
-          if (loading) {
-            return <View><Text>Loading...</Text></View>;
-          }
-
-          if (!getTodoList) {
+          if (loading || !getTodoList) {
             return (
-              <View>
-                <Text>Looks like this Todo List was deleted :O!</Text>
+              <View style={styles.messageContainer}>
+                <Text style={styles.messageText}>
+                  { loading
+                    ? 'Loading...'
+                    : 'Looks like this Todo List was deleted :O!'
+                  }
+                </Text>
               </View>
             );
           }

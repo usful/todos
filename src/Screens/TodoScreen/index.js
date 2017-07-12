@@ -4,15 +4,17 @@ import {
   Text,
   View,
   ScrollView,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import styles from "./styles";
-import { Button, TodoCard } from "../../Components";
+import { Button, TodoCard, Header, Left } from "../../Components";
 import connect from "../../connect";
+import gStyles from '../../globalStyles';
 
 class TodoScreen extends Component {
   constructor(props) {
@@ -105,6 +107,11 @@ class TodoScreen extends Component {
       console.log("error", error);
     }
   };
+
+  handleBackPress = () => {
+    this.props.navigation.goBack();
+  };
+
   render() {
     const { loading } = this.props.getTodo;
 
@@ -117,35 +124,45 @@ class TodoScreen extends Component {
       );
     }
     return (
-      <ScrollView style={styles.container}>
-        <View
-          style={styles.todo}
-          shadowOffset={{ width: 5, height: 5 }}
-          shadowOpacity={0.2}
-          shadowColor={"black"}
-        >
-          <TodoCard todo={this.todo} />
-          <View style={styles.seperator} />
-          <View style={styles.body}>
-            <Text style={styles.bodyText}>
-              {this.todo.text}
-            </Text>
-            <Button
-              onPress={
-                this.todo.voted ? this.deleteVoteHandler : this.addVoteHandler
-              }
-              text={this.todo.voted ? "Vote Down" : "Vote Up"}
-              inverted={!this.todo.voted}
-            >
-              <Icon
-                name={this.todo.voted ? "arrow-down" : "arrow-up"}
-                color={!this.todo.voted ? "#e26e64" : "white"}
-                size={20}
-              />
-            </Button>
+      <View style={gStyles.container}>
+        {/** Header **/}
+        <Header>
+          <Left>
+            <TouchableOpacity onPress={this.handleBackPress}>
+              <Icon name="chevron-left" size={30} color="white" />
+            </TouchableOpacity>
+          </Left>
+        </Header>
+        <ScrollView style={styles.container}>
+          <View
+            style={styles.todo}
+            shadowOffset={{ width: 5, height: 5 }}
+            shadowOpacity={0.2}
+            shadowColor={"black"}
+          >
+            <TodoCard todo={this.todo} />
+            <View style={styles.seperator} />
+            <View style={styles.body}>
+              <Text style={styles.bodyText}>
+                {this.todo.text}
+              </Text>
+              <Button
+                onPress={
+                  this.todo.voted ? this.deleteVoteHandler : this.addVoteHandler
+                }
+                text={this.todo.voted ? "Vote Down" : "Vote Up"}
+                inverted={!this.todo.voted}
+              >
+                <Icon
+                  name={this.todo.voted ? "arrow-down" : "arrow-up"}
+                  color={!this.todo.voted ? "#e26e64" : "white"}
+                  size={20}
+                />
+              </Button>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     );
   }
 }

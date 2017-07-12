@@ -12,4 +12,13 @@ export default StyleSheet.create({
   memberText: {
     fontSize: 18,
   },
+  messageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  messageText: {
+    color: 'white',
+    fontSize: 30,
+    textAlign: 'center',
+  },
 });

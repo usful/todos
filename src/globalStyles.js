@@ -10,5 +10,9 @@ export default StyleSheet.create({
     margin: 15,
     marginBottom:0,
     padding:10,
-  }
+  },
+  container: {
+    backgroundColor:'#e26e64',
+    height:'100%',
+  },
 });
